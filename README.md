@@ -45,4 +45,8 @@ ReactDOM.render(
 
 ## Why Yet Another Redux Hooks implementation? 🤔
 
+All the others I checked had the zombie child bug.
+
+This also an experiment for the future of the react-redux:
+
 https://github.com/reduxjs/react-redux/issues/1177#issuecomment-460097106
