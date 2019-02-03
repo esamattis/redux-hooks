@@ -126,3 +126,70 @@ test("listens dispatches", async () => {
     const el = rtl.getByTestId("content");
     expect(el.innerHTML).toBe("newfoo");
 });
+
+test("does not cause tearing", async () => {
+    interface State {
+        things: {foo: string}[];
+    }
+
+    const initialState: State = {
+        things: [{foo: "first"}, {foo: "second"}, {foo: "third"}],
+    };
+
+    const removeLast = {type: "REMOVE"};
+
+    function reducer(
+        state: State | undefined,
+        action: typeof removeLast,
+    ): State {
+        state = state || initialState;
+
+        if (action.type === "REMOVE") {
+            return {
+                ...state,
+                things: state.things.slice(0, -1),
+            };
+        }
+
+        return state;
+    }
+
+    const store = createStore(reducer);
+
+    function Thing(props: {index: number}) {
+        const thing = useReduxState((s: State) => s.things[props.index]);
+
+        return <div data-testid="thing">{thing.foo}</div>;
+    }
+
+    function Things() {
+        const thingIndices = useReduxState((s: State) =>
+            s.things.map((_, index) => index),
+        );
+
+        return (
+            <div data-testid="content">
+                {thingIndices.map(index => (
+                    <Thing key={index} index={index} />
+                ))}
+            </div>
+        );
+    }
+
+    function App() {
+        return (
+            <Provider store={store as any /* wtf */}>
+                <Things />
+            </Provider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    await nextTick(); // wtf effect is not executed otherwise
+
+    store.dispatch(removeLast);
+
+    // Just asserting no exceptions
+    // Might throw "TypeError: Cannot read property 'foo' of undefined"
+});
