@@ -43,6 +43,6 @@ ReactDOM.render(
 ```
 
 
-## Why an Yet Another? 🤔
+## Why Yet Another Redux Hooks implementation? 🤔
 
 https://github.com/reduxjs/react-redux/issues/1177#issuecomment-460097106
