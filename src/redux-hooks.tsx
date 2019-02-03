@@ -41,11 +41,27 @@ interface MapState<T> {
     (state: any): T;
 }
 
+class NoProviderError extends Error {
+    constructor() {
+        super("<Provider> wrapping missing for useRedux*()?");
+    }
+}
+
+export function useReduxDispatch() {
+    const {store} = useContext(StoreContext);
+
+    if (!store) {
+        throw new NoProviderError();
+    }
+
+    return store.dispatch;
+}
+
 export function useReduxState<T = any>(mapState?: MapState<T>): T {
     const {store, updaters} = useContext(StoreContext);
 
     if (!store) {
-        throw new Error("No provider set?");
+        throw new NoProviderError();
     }
 
     /**
