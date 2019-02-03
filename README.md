@@ -43,6 +43,6 @@ ReactDOM.render(
 ```
 
 
-## Why? 🤔
+## Why an Yet Another? 🤔
 
 https://github.com/reduxjs/react-redux/issues/1177#issuecomment-460097106
