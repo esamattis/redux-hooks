@@ -5,6 +5,10 @@ import React from "react";
 
 afterEach(cleanup);
 
+function nextTick() {
+    return new Promise(r => setTimeout(r, 0));
+}
+
 test("can use the state", () => {
     const initialState = {
         foo: "bar",
@@ -72,10 +76,6 @@ test("can map state", () => {
 
     expect(el.innerHTML).toBe("bar");
 });
-
-function nextTick() {
-    return new Promise(r => setTimeout(r, 0));
-}
 
 test("listens dispatches", async () => {
     interface State {
