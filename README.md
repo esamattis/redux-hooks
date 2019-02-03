@@ -42,8 +42,13 @@ ReactDOM.render(
 );
 ```
 
+## 📚 Examples
 
-## Why Yet Another Redux Hooks implementation? 🤔
+Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree/hooks
+Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
+
+
+## 🤔 Why Yet Another Redux Hooks implementation? 
 
 All the others I checked had the zombie child bug.
 
