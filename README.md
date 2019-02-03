@@ -29,7 +29,7 @@ function Counter() {
 }
 ```
 
-You components must be wrapped with the `HooksProvider`
+Your components must be wrapped with the `HooksProvider`
 
 ```ts
 import {HooksProvider} from "@epeli/redux-hooks";
@@ -41,3 +41,8 @@ ReactDOM.render(
     </HooksProvider>,
 );
 ```
+
+
+## Why? 🤔
+
+https://github.com/reduxjs/react-redux/issues/1177#issuecomment-460097106
