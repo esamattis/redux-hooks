@@ -46,10 +46,13 @@ interface MapState<T> {
 
 class NoProviderError extends Error {
     constructor() {
-        super("<Provider> wrapping missing for useRedux*()?");
+        super("<HooksProvider> wrapping missing for useRedux*()?");
     }
 }
 
+/**
+ * Use Redux dispatch
+ */
 export function useReduxDispatch() {
     const {store} = useContext(StoreContext);
 
@@ -60,6 +63,9 @@ export function useReduxDispatch() {
     return store.dispatch;
 }
 
+/**
+ * Use part of the redux state
+ */
 export function useReduxState<T = any>(mapState?: MapState<T>): T {
     const {store, updaters} = useContext(StoreContext);
 
