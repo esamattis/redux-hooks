@@ -54,7 +54,7 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
     const [stateSlice, setState] = useState(map());
 
     useEffect(() => {
-        let prev: any = null;
+        let prev: any = map();
 
         const update = () => {
             const next = map();

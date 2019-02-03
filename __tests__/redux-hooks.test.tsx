@@ -249,3 +249,61 @@ test("does not render if map state does not return new value", async () => {
 
     expect(renderSpy).toHaveBeenCalledTimes(2);
 });
+
+test("unrelated state change does not cause render", async () => {
+    const renderSpy = jest.fn();
+
+    interface State {
+        foo: string;
+        bar: string;
+    }
+
+    const initialState: State = {
+        foo: "foo",
+        bar: "just bar",
+    };
+
+    const fooAction = {type: "NEW_FOO", foo: "newfoo"};
+
+    function reducer(
+        state: State | undefined,
+        action: typeof fooAction,
+    ): State {
+        state = state || initialState;
+
+        if (action.type === "NEW_FOO") {
+            return {...state, foo: action.foo};
+        }
+
+        return state;
+    }
+
+    const store = createStore(reducer);
+
+    function Thing() {
+        const bar = useReduxState((s: State) => s.bar);
+        renderSpy();
+
+        return <div data-testid="content">{bar}</div>;
+    }
+
+    function App() {
+        return (
+            <Provider store={store as any /* wtf */}>
+                <Thing />
+            </Provider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    await nextTick(); // wtf effect is not executed otherwise
+
+    store.dispatch(fooAction);
+    store.dispatch(fooAction);
+
+    const el = rtl.getByTestId("content");
+    expect(el.innerHTML).toBe("just bar");
+
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+});
