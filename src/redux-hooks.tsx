@@ -1,15 +1,31 @@
 import {Store} from "redux";
+import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect} from "react";
 
 interface ContextType {
     store?: Store;
+    updaters: Function[];
 }
 
-const StoreContext = React.createContext<ContextType>({});
+const StoreContext = React.createContext<ContextType>({
+    updaters: [],
+});
 
 export function Provider(props: {store: Store; children: React.ReactNode}) {
+    const updaters: Function[] = [];
+
+    useEffect(() => {
+        return props.store.subscribe(() => {
+            ReactDOM.unstable_batchedUpdates(() => {
+                for (const update of updaters) {
+                    update();
+                }
+            });
+        });
+    }, [props.store]);
+
     return (
-        <StoreContext.Provider value={{store: props.store}}>
+        <StoreContext.Provider value={{store: props.store, updaters: updaters}}>
             {props.children}
         </StoreContext.Provider>
     );
@@ -20,7 +36,7 @@ interface MapState<T> {
 }
 
 export function useReduxState<T = any>(mapState?: MapState<T>): T {
-    const {store} = useContext(StoreContext);
+    const {store, updaters} = useContext(StoreContext);
 
     if (!store) {
         throw new Error("No provider set?");
@@ -34,12 +50,18 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         return state;
     };
 
-    const [stateSlice, setState] = useState(map);
+    const [stateSlice, setState] = useState(map());
+
+    const update = () => {
+        setState(map());
+    };
 
     useEffect(() => {
-        return store.subscribe(() => {
-            setState(map());
-        });
+        updaters.push(update);
+        return () => {
+            const index = updaters.indexOf(update);
+            updaters.splice(index, 1);
+        };
     }, [store]);
 
     return stateSlice;
