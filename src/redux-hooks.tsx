@@ -15,12 +15,22 @@ export function Provider(props: {store: Store; children: React.ReactNode}) {
     );
 }
 
-export function useReduxState() {
+interface MapState<T> {
+    (state: any): T;
+}
+
+export function useReduxState<T = any>(mapState?: MapState<T>): T {
     const context = useContext(StoreContext);
 
     if (!context.store) {
         throw new Error("No provider set?");
     }
 
-    return context.store.getState();
+    const state = context.store.getState();
+
+    if (mapState) {
+        return mapState(state);
+    }
+
+    return state;
 }
