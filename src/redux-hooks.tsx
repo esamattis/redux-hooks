@@ -1,6 +1,6 @@
 import {Store} from "redux";
 import ReactDOM from "react-dom";
-import React, {useContext, useState, useEffect} from "react";
+import React, {useContext, useState, useEffect, useRef} from "react";
 import {shallowEqual} from "./shallow-equal";
 
 interface ContextType {
@@ -51,10 +51,16 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         return state;
     };
 
-    const [stateSlice, setState] = useState(map());
+    const initialSliceContainer = useRef<T | null>(null);
+
+    if (!initialSliceContainer.current) {
+        initialSliceContainer.current = map();
+    }
+
+    const [stateSlice, setState] = useState(initialSliceContainer.current!);
 
     useEffect(() => {
-        let prev: any = map();
+        let prev: T | null = initialSliceContainer.current;
 
         const update = () => {
             const next = map();
