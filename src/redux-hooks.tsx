@@ -1,6 +1,7 @@
 import {Store} from "redux";
 import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect} from "react";
+import {shallowEqual} from "./shallow-equal";
 
 interface ContextType {
     store?: Store;
@@ -52,11 +53,18 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
 
     const [stateSlice, setState] = useState(map());
 
-    const update = () => {
-        setState(map());
-    };
-
     useEffect(() => {
+        let prev: any = null;
+
+        const update = () => {
+            const next = map();
+
+            if (!shallowEqual(prev, next)) {
+                setState(next);
+                prev = next;
+            }
+        };
+
         updaters.push(update);
         return () => {
             const index = updaters.indexOf(update);

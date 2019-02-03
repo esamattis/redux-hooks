@@ -193,3 +193,59 @@ test("does not cause tearing", async () => {
     // Just asserting no exceptions
     // Might throw "TypeError: Cannot read property 'foo' of undefined"
 });
+
+test("does not render if map state does not return new value", async () => {
+    const renderSpy = jest.fn();
+
+    interface State {
+        foo: string;
+    }
+
+    const initialState: State = {
+        foo: "foo",
+    };
+
+    const fooAction = {type: "NEW_FOO", foo: "newfoo"};
+
+    function reducer(
+        state: State | undefined,
+        action: typeof fooAction,
+    ): State {
+        state = state || initialState;
+
+        if (action.type === "NEW_FOO") {
+            return {...state, foo: action.foo};
+        }
+
+        return state;
+    }
+
+    const store = createStore(reducer);
+
+    function Thing() {
+        const foo = useReduxState((s: State) => s.foo);
+        renderSpy();
+
+        return <div data-testid="content">{foo}</div>;
+    }
+
+    function App() {
+        return (
+            <Provider store={store as any /* wtf */}>
+                <Thing />
+            </Provider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    await nextTick(); // wtf effect is not executed otherwise
+
+    store.dispatch(fooAction);
+    store.dispatch(fooAction);
+
+    const el = rtl.getByTestId("content");
+    expect(el.innerHTML).toBe("newfoo");
+
+    expect(renderSpy).toHaveBeenCalledTimes(2);
+});
