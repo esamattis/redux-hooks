@@ -1,5 +1,5 @@
 import {Store} from "redux";
-import React, {useContext} from "react";
+import React, {useContext, useState, useEffect} from "react";
 
 interface ContextType {
     store?: Store;
@@ -20,17 +20,27 @@ interface MapState<T> {
 }
 
 export function useReduxState<T = any>(mapState?: MapState<T>): T {
-    const context = useContext(StoreContext);
+    const {store} = useContext(StoreContext);
 
-    if (!context.store) {
+    if (!store) {
         throw new Error("No provider set?");
     }
 
-    const state = context.store.getState();
+    const map = () => {
+        const state = store.getState();
+        if (mapState) {
+            return mapState(state);
+        }
+        return state;
+    };
 
-    if (mapState) {
-        return mapState(state);
-    }
+    const [stateSlice, setState] = useState(map);
 
-    return state;
+    useEffect(() => {
+        return store.subscribe(() => {
+            setState(map());
+        });
+    }, [store]);
+
+    return stateSlice;
 }
