@@ -1,6 +1,6 @@
 import {createStore} from "redux";
 import {render, fireEvent, cleanup} from "react-testing-library";
-import {Provider, useReduxState} from "../src/redux-hooks";
+import {HooksProvider, useReduxState} from "../src/redux-hooks";
 import React from "react";
 
 afterEach(cleanup);
@@ -28,9 +28,9 @@ test("can use the state", () => {
 
     function App() {
         return (
-            <Provider store={store}>
+            <HooksProvider store={store}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -64,9 +64,9 @@ test("can map state", () => {
 
     function App() {
         return (
-            <Provider store={store}>
+            <HooksProvider store={store}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -111,9 +111,9 @@ test("listens dispatches", async () => {
 
     function App() {
         return (
-            <Provider store={store as any /* wtf */}>
+            <HooksProvider store={store as any /* wtf */}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -178,9 +178,9 @@ test("does not cause tearing", async () => {
 
     function App() {
         return (
-            <Provider store={store as any /* wtf */}>
+            <HooksProvider store={store as any /* wtf */}>
                 <Things />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -231,9 +231,9 @@ test("does not render if map state does not return new value", async () => {
 
     function App() {
         return (
-            <Provider store={store as any /* wtf */}>
+            <HooksProvider store={store as any /* wtf */}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -289,9 +289,9 @@ test("unrelated state change does not cause render", async () => {
 
     function App() {
         return (
-            <Provider store={store as any /* wtf */}>
+            <HooksProvider store={store as any /* wtf */}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 
@@ -347,9 +347,9 @@ test("map state is optimized", async () => {
 
     function App() {
         return (
-            <Provider store={store as any /* wtf */}>
+            <HooksProvider store={store as any /* wtf */}>
                 <Thing />
-            </Provider>
+            </HooksProvider>
         );
     }
 

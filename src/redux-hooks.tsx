@@ -12,7 +12,10 @@ const StoreContext = React.createContext<ContextType>({
     updaters: [],
 });
 
-export function Provider(props: {store: Store; children: React.ReactNode}) {
+export function HooksProvider(props: {
+    store: Store;
+    children: React.ReactNode;
+}) {
     // Mutable updaters list of all useReduxState() users
     const updaters: Function[] = [];
 
