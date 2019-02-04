@@ -1,4 +1,4 @@
-# @epeli/redux-hooks
+# ⚓ @epeli/redux-hooks
 
 React Hooks implementation for Redux that does not suffer from the tearing /
 "zombie child component" problems.
