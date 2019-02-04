@@ -35,10 +35,10 @@ Your components must be wrapped with the `HooksProvider`
 import {HooksProvider} from "@epeli/redux-hooks";
 
 ReactDOM.render(
-    document.getElementById("app"),
     <HooksProvider store={store}>
         <Counter />
     </HooksProvider>,
+    document.getElementById("app"),
 );
 ```
 
