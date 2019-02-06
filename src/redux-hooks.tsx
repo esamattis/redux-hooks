@@ -112,6 +112,9 @@ type PickFunctions<T> = {
         : never
 };
 
+/**
+ * Bound actions creators object to Redux dispatch. Memoized.
+ */
 export function useActionCreators<T>(actionCreators: T): PickFunctions<T> {
     const dispatch = useReduxDispatch();
 
