@@ -174,12 +174,12 @@ export function useMapState<T = any>(mapState?: MapState<T>): T {
         return state;
     };
 
-    const prev = useRef<T | Nil>(nil);
-    const cache = useRef<T | Nil>(nil);
+    const prevRef = useRef<T | Nil>(nil);
+    const cacheRef = useRef<T | Nil>(nil);
 
     // Set initial mapped state for the first render
-    if (prev.current === nil) {
-        prev.current = cache.current = getMappedValue();
+    if (prevRef.current === nil) {
+        prevRef.current = cacheRef.current = getMappedValue();
     }
 
     useEffect(() => {
@@ -187,9 +187,9 @@ export function useMapState<T = any>(mapState?: MapState<T>): T {
         const update = () => {
             const next = getMappedValue();
 
-            if (!shallowEqual(prev.current, next)) {
-                cache.current = next;
-                prev.current = next;
+            if (!shallowEqual(prevRef.current, next)) {
+                cacheRef.current = next;
+                prevRef.current = next;
                 triggerRender();
             }
         };
@@ -204,20 +204,20 @@ export function useMapState<T = any>(mapState?: MapState<T>): T {
             updaters.delete(id);
 
             // clear cached on store change
-            prev.current = nil;
-            cache.current = nil;
+            prevRef.current = nil;
+            cacheRef.current = nil;
         };
     }, [store]);
 
-    if (cache.current !== nil) {
+    if (cacheRef.current !== nil) {
         // First render or store triggered the update. Already computed during
         // the shallow equal check.
-        const ret = cache.current;
-        cache.current = nil;
+        const ret = cacheRef.current;
+        cacheRef.current = nil;
         return ret;
     }
 
     // Normal render. Must map the state because the mapping function might
     // have changed
-    return (prev.current = getMappedValue());
+    return (prevRef.current = getMappedValue());
 }
