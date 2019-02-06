@@ -185,7 +185,6 @@ export function useMapState<D extends any[], T = any>(
         return (mapState as any)(state);
     };
 
-    const prevDepsRef = useRef<D | undefined>(undefined);
     const prevRef = useRef<T | Nil>(nil);
     const cacheRef = useRef<T | Nil>(nil);
 
@@ -194,11 +193,13 @@ export function useMapState<D extends any[], T = any>(
         prevRef.current = cacheRef.current = getMappedValue();
     }
 
+    const memoDeps = useMemo(() => deps, deps || []);
+
     if (deps) {
-        if (shallowEqual(prevDepsRef.current, deps)) {
+        // when the memoDeps did not change to current deps we can reuse the
+        // previous mapped state
+        if (memoDeps !== deps) {
             cacheRef.current = prevRef.current;
-        } else {
-            prevDepsRef.current = deps;
         }
     }
 

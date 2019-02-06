@@ -525,15 +525,15 @@ test("can use deps", () => {
         return <div data-testid="content">{foo}</div>;
     }
 
-    let setState = (s: string) => {};
+    let setState = (state: {value: string}) => {};
 
     function App() {
-        const [s, _setState] = useState("bar");
+        const [state, _setState] = useState({value: "bar"});
         setState = _setState;
 
         return (
             <HooksProvider store={store}>
-                <Thing s={s} />
+                <Thing s={state.value} />
             </HooksProvider>
         );
     }
@@ -544,13 +544,19 @@ test("can use deps", () => {
     expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
 
     act(() => {
-        setState("baz");
+        setState({value: "baz"});
     });
     expect(mapSpy).toHaveBeenCalledTimes(2);
     expect(rtl.getByTestId("content").innerHTML).toBe("foobaz");
 
     act(() => {
-        setState("BAR");
+        setState({value: "BAR"});
+    });
+    expect(mapSpy).toHaveBeenCalledTimes(3);
+    expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
+
+    act(() => {
+        setState({value: "BAR"});
     });
     expect(mapSpy).toHaveBeenCalledTimes(3);
     expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
