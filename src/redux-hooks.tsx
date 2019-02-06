@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect, useRef, useMemo} from "react";
 import {shallowEqual} from "./shallow-equal";
 
+declare const process: any;
+
 /** id sequence */
 let SEQ = 0;
 
@@ -96,7 +98,7 @@ export function HooksProvider(props: {
 /**
  * Use Redux dispatch
  */
-export function useReduxDispatch() {
+export function useDispatch() {
     const {store} = useContext(StoreContext);
 
     if (!store) {
@@ -104,6 +106,15 @@ export function useReduxDispatch() {
     }
 
     return store.dispatch;
+}
+
+export function useReduxDispatch() {
+    if (process.env.NODE_ENV !== "production") {
+        console.warn(
+            "@epeli/redux-hooks: useReduxDispatch() has been renamed to useDispatch()",
+        );
+    }
+    return useDispatch();
 }
 
 type PickFunctions<T> = {
@@ -131,12 +142,10 @@ function useForceRender() {
     };
 }
 
-declare const process: any;
-
 export function useReduxState<T = any>(mapState?: MapState<T>): T {
     if (process.env.NODE_ENV !== "production") {
         console.warn(
-            "@epeli/redux-hooks: useReduxState() has been renamed to useMapState",
+            "@epeli/redux-hooks: useReduxState() has been renamed to useMapState()",
         );
     }
     return useMapState(mapState);
