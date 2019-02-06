@@ -19,8 +19,8 @@ interface ContextType {
 
 // Custom "null" because mapState can return the js null we must be able to
 // differentiate from it
-const nil = Symbol("NIL");
-type Nil = typeof nil;
+const nil = {} as "nil"; // cross browser Symbol hack :)
+type Nil = "nil";
 
 function createMap(): UpdatersMap {
     if (typeof Map !== "undefined") {
