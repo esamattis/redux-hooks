@@ -76,7 +76,7 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
     /**
      * Get mapped value from the state
      */
-    const getMappedValue = () => {
+    const getMappedValue = (): T => {
         const state = store.getState();
         if (mapState) {
             return mapState(state);
@@ -84,23 +84,25 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         return state;
     };
 
-    // Use ref to avoid useless state mapping
-    const initialSliceContainer = useRef<T | null>(null);
-    if (!initialSliceContainer.current) {
-        initialSliceContainer.current = getMappedValue();
+    const prev = useRef<T | null>(null);
+    const cache = useRef<T | null>(null);
+
+    // Set initial mapped state for the first render
+    if (prev.current === null) {
+        prev.current = cache.current = getMappedValue();
     }
 
-    const [stateSlice, setState] = useState(initialSliceContainer.current!);
+    const [updates, setUpdateCount] = useState(0);
 
     useEffect(() => {
-        let prev: T | null = initialSliceContainer.current;
-
+        // handle updates from the store
         const update = () => {
             const next = getMappedValue();
 
-            if (!shallowEqual(prev, next)) {
-                setState(next);
-                prev = next;
+            if (!shallowEqual(prev.current, next)) {
+                cache.current = next;
+                prev.current = next;
+                setUpdateCount(count => count + 1);
             }
         };
 
@@ -115,5 +117,15 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         };
     }, [store]);
 
-    return stateSlice;
+    if (cache.current) {
+        // Store triggered the update. Already computed during the shallow equal
+        // check.
+        const ret = cache.current;
+        cache.current = null;
+        return ret;
+    } else {
+        // Normal render. Must map the state because the mapping function might
+        // have changed
+        return getMappedValue();
+    }
 }

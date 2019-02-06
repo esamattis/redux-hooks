@@ -1,7 +1,7 @@
 import {createStore} from "redux";
 import {render, fireEvent, cleanup} from "react-testing-library";
 import {HooksProvider, useReduxState} from "../src/redux-hooks";
-import React from "react";
+import React, {useState, useCallback} from "react";
 
 afterEach(cleanup);
 
@@ -364,4 +364,65 @@ test("map state is optimized", async () => {
 
     // Once for the initial mount and once for the dispatch
     expect(mapStateSpy).toHaveBeenCalledTimes(2);
+});
+
+test("render re-executes map state", () => {
+    type State = {[id: string]: {name: string}};
+
+    const initialState: State = {
+        a: {name: "user A"},
+        b: {name: "user B"},
+        c: {name: "user C"},
+    };
+
+    const selectors = {
+        getAllUsers: (state: State) => Object.keys(state),
+        getUserById: (state: State, id: string) => state[id],
+    };
+
+    const reducer = () => initialState;
+    const store = createStore(reducer);
+
+    const User = ({userId}: {userId: string}) => {
+        const name = useReduxState(
+            state => selectors.getUserById(state, userId).name,
+        );
+        return (
+            <div data-testid="user">
+                Hi, my name is {name} ({userId})
+            </div>
+        );
+    };
+
+    const Users = () => {
+        const allUsers = useReduxState(state => selectors.getAllUsers(state));
+        const [currentIndex, setCurrentIndex] = useState(0);
+
+        const increment = () => {
+            setCurrentIndex(1);
+        };
+
+        return (
+            <div>
+                <User userId={allUsers[currentIndex]} />
+                <button data-testid="next-button" onClick={increment}>
+                    NEXT USER
+                </button>
+            </div>
+        );
+    };
+
+    const App = () => (
+        <HooksProvider store={store}>
+            <Users />
+        </HooksProvider>
+    );
+
+    const rtl = render(<App />);
+
+    fireEvent.click(rtl.getByTestId("next-button"));
+
+    const user = rtl.getByTestId("user");
+
+    expect(user.innerHTML).toEqual("Hi, my name is user B (b)");
 });
