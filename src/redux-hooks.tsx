@@ -63,6 +63,14 @@ export function useReduxDispatch() {
     return store.dispatch;
 }
 
+function useForceRender() {
+    const [_, setUpdateCount] = useState(0);
+
+    return function trigger() {
+        setUpdateCount(count => count + 1);
+    };
+}
+
 /**
  * Use part of the redux state
  */
@@ -72,6 +80,8 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
     if (!store) {
         throw new NoProviderError();
     }
+
+    const triggerRender = useForceRender();
 
     /**
      * Get mapped value from the state
@@ -92,8 +102,6 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         prev.current = cache.current = getMappedValue();
     }
 
-    const [updates, setUpdateCount] = useState(0);
-
     useEffect(() => {
         // handle updates from the store
         const update = () => {
@@ -102,7 +110,7 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
             if (!shallowEqual(prev.current, next)) {
                 cache.current = next;
                 prev.current = next;
-                setUpdateCount(count => count + 1);
+                triggerRender();
             }
         };
 
