@@ -1,48 +1,48 @@
 {
-    "name": "@epeli/redux-hooks",
-    "version": "0.2.0",
-    "description": "",
-    "main": "lib/redux-hooks.js",
-    "types": "lib/redux-hooks.d.ts",
-    "repository": {
-        "url": "https://github.com/epeli/redux-hooks"
-    },
-    "scripts": {
-        "test": "npm run dtslint && jest",
-        "build": "tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
-        "clean": "rm -rf lib build",
-        "dtslint": "tslint --project tsconfig.dtslint.json",
-        "prepublishOnly": "npm run test && npm run build"
-    },
-    "keywords": [
-        "react",
-        "typescript",
-        "redux"
-    ],
-    "author": "Esa-Matti Suuronen",
-    "license": "ISC",
-    "files": [
-        "lib"
-    ],
-    "devDependencies": {
-        "@types/jest": "^23.0.0",
-        "@types/react": "^16.8.2",
-        "@types/react-dom": "^16.8.0",
-        "dtslint": "^0.4.2",
-        "jest": "^23.0.0",
-        "prettier": "^1.16.4",
-        "react": "^16.8.1",
-        "react-dom": "^16.8.1",
-        "react-testing-library": "^5.5.3",
-        "redux": "^4.0.1",
-        "ts-jest": "^23.10.5",
-        "typescript": "^3.4.0-dev.20190206"
-    },
-    "peerDependencies": {
-        "redux": "^4.0.0"
-    },
-    "dependencies": {
-        "eslint": "^5.13.0",
-        "tslint-react-hooks": "^1.0.1"
-    }
+  "name": "@epeli/redux-hooks",
+  "version": "0.3.0",
+  "description": "",
+  "main": "lib/redux-hooks.js",
+  "types": "lib/redux-hooks.d.ts",
+  "repository": {
+    "url": "https://github.com/epeli/redux-hooks"
+  },
+  "scripts": {
+    "test": "npm run dtslint && jest",
+    "build": "tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
+    "clean": "rm -rf lib build",
+    "dtslint": "tslint --project tsconfig.dtslint.json",
+    "prepublishOnly": "npm run test && npm run build"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "redux"
+  ],
+  "author": "Esa-Matti Suuronen",
+  "license": "ISC",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "@types/jest": "^23.0.0",
+    "@types/react": "^16.8.2",
+    "@types/react-dom": "^16.8.0",
+    "dtslint": "^0.4.2",
+    "jest": "^23.0.0",
+    "prettier": "^1.16.4",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "react-testing-library": "^5.5.3",
+    "redux": "^4.0.1",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.4.0-dev.20190206"
+  },
+  "peerDependencies": {
+    "redux": "^4.0.0"
+  },
+  "dependencies": {
+    "eslint": "^5.13.0",
+    "tslint-react-hooks": "^1.0.1"
+  }
 }
