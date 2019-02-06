@@ -6,6 +6,14 @@ import {shallowEqual} from "./shallow-equal";
 /** id sequence */
 let SEQ = 0;
 
+// Custom "null" because mapState can return the js null we must be able to
+// differentiate from it
+const nil = {} as "nil"; // cross browser Symbol hack :)
+type Nil = "nil";
+
+/**
+ * Subset of Map we use
+ */
 interface UpdatersMap {
     set(id: number, updater: Function): unknown;
     delete(id: number): unknown;
@@ -17,11 +25,19 @@ interface ContextType {
     updaters: UpdatersMap;
 }
 
-// Custom "null" because mapState can return the js null we must be able to
-// differentiate from it
-const nil = {} as "nil"; // cross browser Symbol hack :)
-type Nil = "nil";
+interface MapState<T> {
+    (state: any): T;
+}
 
+class NoProviderError extends Error {
+    constructor() {
+        super("<HooksProvider> wrapping missing for useRedux*()?");
+    }
+}
+
+/**
+ * Create ponyfill Map if native is not available
+ */
 function createMap(): UpdatersMap {
     if (typeof Map !== "undefined") {
         return new Map<number, Function>();
@@ -75,16 +91,6 @@ export function HooksProvider(props: {
             {props.children}
         </StoreContext.Provider>
     );
-}
-
-interface MapState<T> {
-    (state: any): T;
-}
-
-class NoProviderError extends Error {
-    constructor() {
-        super("<HooksProvider> wrapping missing for useRedux*()?");
-    }
 }
 
 /**
