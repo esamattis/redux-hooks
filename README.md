@@ -42,6 +42,11 @@ ReactDOM.render(
 );
 ```
 
+Custom provider is required for now because the official react-redux bindings
+do not use subscriptions and it's impossible to implement Redux hooks without
+efficiently. Read more about it
+[here](https://github.com/reduxjs/react-redux/issues/1177).
+
 ## 🚀 Optimizing
 
 You can optimize state mapping by passing a dependency array which works like
