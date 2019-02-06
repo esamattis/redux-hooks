@@ -66,7 +66,7 @@ function User(props) {
 Without the dependencies array the state is mapped always when the component
 renders.
 
-Unlike in useMemo hook the depencencies array is spread to the mapping
+Unlike in the useMemo hook the depencencies array is spread to the mapping
 function so you can share selectors with multiple components easily.
 
 ```ts
