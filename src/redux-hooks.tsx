@@ -134,6 +134,6 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
     } else {
         // Normal render. Must map the state because the mapping function might
         // have changed
-        return getMappedValue();
+        return (prev.current = getMappedValue());
     }
 }
