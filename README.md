@@ -45,7 +45,7 @@ ReactDOM.render(
 ## 🚀 Optimizing
 
 You can optimize state mapping by passing a dependency array which works like
-`useMemo()`.
+in the `useMemo()` hook.
 
 ```ts
 function User(props) {
@@ -59,7 +59,9 @@ function User(props) {
 ```
 
 Without the dependencies array the state is mapped always when the component
-renders. Unlike `useMemo()` the depencencies array is spread to the mapping
+renders.
+
+Unlike `useMemo()` the depencencies array is spread to the mapping
 function so you can share selectors with multiple components easily.
 
 ```ts
@@ -75,7 +77,7 @@ function User(props) {
 
 ## 🔧 Custom selector hooks
 
-But instead of sharing selectors I think it's better just create custom hooks
+But instead of sharing selectors I think it's better to just create custom hooks
 
 ```ts
 function useUser(userId) {
