@@ -86,10 +86,7 @@ But instead of sharing selectors I think it's better to just create custom hooks
 
 ```ts
 function useUser(userId) {
-    return useMapState(
-        state => state.users[props.userId],
-        [props.userId], // deps
-    );
+    return useMapState(state => state.users[props.userId], [userId]);
 }
 ```
 
