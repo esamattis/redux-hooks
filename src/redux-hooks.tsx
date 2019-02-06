@@ -131,10 +131,21 @@ function useForceRender() {
     };
 }
 
+declare const process: any;
+
+export function useReduxState<T = any>(mapState?: MapState<T>): T {
+    if (process.env.NODE_ENV !== "production") {
+        console.warn(
+            "@epeli/redux-hooks: useReduxState() has been renamed to useMapState",
+        );
+    }
+    return useMapState(mapState);
+}
+
 /**
  * Use part of the redux state
  */
-export function useReduxState<T = any>(mapState?: MapState<T>): T {
+export function useMapState<T = any>(mapState?: MapState<T>): T {
     const {store, updaters} = useContext(StoreContext);
 
     if (!store) {

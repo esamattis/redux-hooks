@@ -2,7 +2,7 @@ import {createStore} from "redux";
 import {render, fireEvent, cleanup} from "react-testing-library";
 import {
     HooksProvider,
-    useReduxState,
+    useMapState,
     useActionCreators,
 } from "../src/redux-hooks";
 import React, {useState, useCallback} from "react";
@@ -25,7 +25,7 @@ test("can use the state", () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const state = useReduxState();
+        const state = useMapState();
 
         return <div data-testid="content">{state.foo}</div>;
     }
@@ -61,7 +61,7 @@ test("can map state", () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const foo = useReduxState((s: State) => s.foo);
+        const foo = useMapState((s: State) => s.foo);
 
         return <div data-testid="content">{foo}</div>;
     }
@@ -108,7 +108,7 @@ test("listens dispatches", async () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const foo = useReduxState((s: State) => s.foo);
+        const foo = useMapState((s: State) => s.foo);
 
         return <div data-testid="content">{foo}</div>;
     }
@@ -161,13 +161,13 @@ test("does not cause tearing", async () => {
     const store = createStore(reducer);
 
     function Thing(props: {index: number}) {
-        const thing = useReduxState((s: State) => s.things[props.index]);
+        const thing = useMapState((s: State) => s.things[props.index]);
 
         return <div data-testid="thing">{thing.foo}</div>;
     }
 
     function Things() {
-        const thingIndices = useReduxState((s: State) =>
+        const thingIndices = useMapState((s: State) =>
             s.things.map((_, index) => index),
         );
 
@@ -227,7 +227,7 @@ test("does not render if map state does not return new value", async () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const foo = useReduxState((s: State) => s.foo);
+        const foo = useMapState((s: State) => s.foo);
         renderSpy();
 
         return <div data-testid="content">{foo}</div>;
@@ -285,7 +285,7 @@ test("unrelated state change does not cause render", async () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const bar = useReduxState((s: State) => s.bar);
+        const bar = useMapState((s: State) => s.bar);
         renderSpy();
 
         return <div data-testid="content">{bar}</div>;
@@ -341,7 +341,7 @@ test("map state is optimized", async () => {
     const store = createStore(reducer);
 
     function Thing() {
-        const foo = useReduxState((s: State) => {
+        const foo = useMapState((s: State) => {
             mapStateSpy();
             return s.foo;
         });
@@ -388,7 +388,7 @@ test("render re-executes map state", () => {
     const store = createStore(reducer);
 
     const User = ({userId}: {userId: string}) => {
-        const name = useReduxState(
+        const name = useMapState(
             state => selectors.getUserById(state, userId).name,
         );
         return (
@@ -399,7 +399,7 @@ test("render re-executes map state", () => {
     };
 
     const Users = () => {
-        const allUsers = useReduxState(state => selectors.getAllUsers(state));
+        const allUsers = useMapState(state => selectors.getAllUsers(state));
         const [currentIndex, setCurrentIndex] = useState(0);
 
         const increment = () => {
@@ -461,7 +461,7 @@ test("useActionCreators", async () => {
     const actionsRefs: any[] = [];
 
     function Thing() {
-        const foo = useReduxState((s: State) => s.foo);
+        const foo = useMapState((s: State) => s.foo);
         const actions = useActionCreators(ActionCreators);
 
         actionsRefs.push(actions);

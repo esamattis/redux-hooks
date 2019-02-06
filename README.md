@@ -13,7 +13,7 @@ map state function does not produce new value (shallow equal test).
 ## 📖 Usage
 
 ```ts
-import {useReduxState, useActionCreators} from "@epeli/redux-hooks";
+import {useMapState, useActionCreators} from "@epeli/redux-hooks";
 
 const ActionCreators = {
     inc() {
@@ -22,7 +22,7 @@ const ActionCreators = {
 };
 
 function Counter() {
-    const count = useReduxState(state => state.count);
+    const count = useMapState(state => state.count);
     const actions = useActionCreators(ActionCreators);
 
     return <button onClick={actions.inc}>{count}</button>;
