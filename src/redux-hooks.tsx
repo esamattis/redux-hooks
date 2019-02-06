@@ -3,9 +3,18 @@ import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect, useRef} from "react";
 import {shallowEqual} from "./shallow-equal";
 
+/** id sequence */
+let SEQ = 0;
+
+interface UpdatersMap {
+    set(id: number, updater: Function): unknown;
+    delete(id: number): unknown;
+    forEach(cb: (updater: Function) => void): unknown;
+}
+
 interface ContextType {
     store?: Store;
-    updaters: Function[];
+    updaters: UpdatersMap;
 }
 
 // Custom "null" because mapState can return the js null we must be able to
@@ -13,8 +22,31 @@ interface ContextType {
 const nil = Symbol("NIL");
 type Nil = typeof nil;
 
+function createMap(): UpdatersMap {
+    if (typeof Map !== "undefined") {
+        return new Map<number, Function>();
+    }
+
+    const poorMap: Record<number, Function> = {};
+
+    // ponyfill for Map
+    return {
+        set(id: number, updater: Function) {
+            poorMap[id] = updater;
+        },
+        delete(id: number) {
+            delete poorMap[id];
+        },
+        forEach(cb: (updater: Function) => void) {
+            for (const id in poorMap) {
+                cb(poorMap[id]);
+            }
+        },
+    };
+}
+
 const StoreContext = React.createContext<ContextType>({
-    updaters: [],
+    updaters: createMap(),
 });
 
 export function HooksProvider(props: {
@@ -22,16 +54,14 @@ export function HooksProvider(props: {
     children: React.ReactNode;
 }) {
     // Mutable updaters list of all useReduxState() users
-    const updaters = useRef<Function[]>([]);
+    const updaters = useRef<UpdatersMap>(createMap());
 
     useEffect(() => {
         // Setup only one listener for the provider
         return props.store.subscribe(() => {
             // so we can batch update all hook users without causing tearing
             ReactDOM.unstable_batchedUpdates(() => {
-                for (const update of updaters.current) {
-                    update();
-                }
+                updaters.current.forEach(updater => updater());
             });
         });
     }, [props.store]);
@@ -121,14 +151,14 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
             }
         };
 
-        // Mutate the updaters list so the subscription in provider can update
+        // Mutate the updaters map so the subscription in provider can update
         // this hook
-        updaters.push(update);
+        const id = ++SEQ;
+        updaters.set(id, update);
 
         return () => {
             // Remove the updater on unmount or store change
-            const index = updaters.indexOf(update);
-            updaters.splice(index, 1);
+            updaters.delete(id);
 
             // clear cached on store change
             prev.current = nil;
