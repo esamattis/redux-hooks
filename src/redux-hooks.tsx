@@ -22,14 +22,14 @@ export function HooksProvider(props: {
     children: React.ReactNode;
 }) {
     // Mutable updaters list of all useReduxState() users
-    const updaters: Function[] = [];
+    const updaters = useRef<Function[]>([]);
 
     useEffect(() => {
         // Setup only one listener for the provider
         return props.store.subscribe(() => {
-            // so we can batch update all hook users
+            // so we can batch update all hook users without causing tearing
             ReactDOM.unstable_batchedUpdates(() => {
-                for (const update of updaters) {
+                for (const update of updaters.current) {
                     update();
                 }
             });
@@ -39,7 +39,9 @@ export function HooksProvider(props: {
     // Context values never update. We put the store directly and the updates
     // list into it
     return (
-        <StoreContext.Provider value={{store: props.store, updaters: updaters}}>
+        <StoreContext.Provider
+            value={{store: props.store, updaters: updaters.current}}
+        >
             {props.children}
         </StoreContext.Provider>
     );
@@ -124,9 +126,13 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         updaters.push(update);
 
         return () => {
-            // Remove the updater on unmount
+            // Remove the updater on unmount or store change
             const index = updaters.indexOf(update);
             updaters.splice(index, 1);
+
+            // clear cached on store change
+            prev.current = nil;
+            cache.current = nil;
         };
     }, [store]);
 
