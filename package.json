@@ -40,5 +40,9 @@
   },
   "peerDependencies": {
     "redux": "^4.0.0"
+  },
+  "dependencies": {
+    "eslint": "^5.13.0",
+    "tslint-react-hooks": "^1.0.1"
   }
 }

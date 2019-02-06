@@ -1,6 +1,8 @@
 {
     "rulesDirectory": "./node_modules/dtslint/bin/rules",
+    "extends": "tslint-react-hooks",
     "rules": {
-        "expect": true
+        "expect": true,
+        "react-hooks-nesting": "error"
     }
 }
