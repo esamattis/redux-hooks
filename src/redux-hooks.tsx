@@ -8,6 +8,11 @@ interface ContextType {
     updaters: Function[];
 }
 
+// Custom "null" because mapState can return the js null we must be able to
+// differentiate from it
+const nil = Symbol("NIL");
+type Nil = typeof nil;
+
 const StoreContext = React.createContext<ContextType>({
     updaters: [],
 });
@@ -94,11 +99,11 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         return state;
     };
 
-    const prev = useRef<T | null>(null);
-    const cache = useRef<T | null>(null);
+    const prev = useRef<T | Nil>(nil);
+    const cache = useRef<T | Nil>(nil);
 
     // Set initial mapped state for the first render
-    if (prev.current === null) {
+    if (prev.current === nil) {
         prev.current = cache.current = getMappedValue();
     }
 
@@ -125,15 +130,15 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
         };
     }, [store]);
 
-    if (cache.current) {
-        // Store triggered the update. Already computed during the shallow equal
-        // check.
+    if (cache.current !== nil) {
+        // First render or store triggered the update. Already computed during
+        // the shallow equal check.
         const ret = cache.current;
-        cache.current = null;
+        cache.current = nil;
         return ret;
-    } else {
-        // Normal render. Must map the state because the mapping function might
-        // have changed
-        return (prev.current = getMappedValue());
     }
+
+    // Normal render. Must map the state because the mapping function might
+    // have changed
+    return (prev.current = getMappedValue());
 }
