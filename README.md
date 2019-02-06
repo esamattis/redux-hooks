@@ -13,19 +13,19 @@ map state function does not produce new value (shallow equal test).
 ## 📖 Usage
 
 ```ts
-import {useReduxState, useReduxDispatch} from "@epeli/redux-hooks";
+import {useReduxState, useActionCreators} from "@epeli/redux-hooks";
 
-function useIncrement() {
-    const dispatch = useReduxDispatch();
-
-    return () => dispatch({type: "INCREMENT"});
-}
+const ActionCreators = {
+    inc() {
+        return {type: "INCREMENT"};
+    },
+};
 
 function Counter() {
     const count = useReduxState(state => state.count);
-    const inc = useIncrement();
+    const actions = useActionCreators(ActionCreators);
 
-    return <button onClick={inc}>{count}</button>;
+    return <button onClick={actions.inc}>{count}</button>;
 }
 ```
 
@@ -48,8 +48,7 @@ Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree
 
 Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
 
-
-## 🤔 Why Yet Another Redux Hooks implementation? 
+## 🤔 Why Yet Another Redux Hooks implementation?
 
 All the others I checked had the zombie child bug.
 

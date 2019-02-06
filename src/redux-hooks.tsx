@@ -1,6 +1,6 @@
-import {Store} from "redux";
+import {Store, bindActionCreators} from "redux";
 import ReactDOM from "react-dom";
-import React, {useContext, useState, useEffect, useRef} from "react";
+import React, {useContext, useState, useEffect, useRef, useMemo} from "react";
 import {shallowEqual} from "./shallow-equal";
 
 /** id sequence */
@@ -104,6 +104,20 @@ export function useReduxDispatch() {
     }
 
     return store.dispatch;
+}
+
+type PickFunctions<T> = {
+    [K in keyof T]: T[K] extends (...args: any) => any
+        ? (...args: Parameters<T[K]>) => void
+        : never
+};
+
+export function useActionCreators<T>(actionCreators: T): PickFunctions<T> {
+    const dispatch = useReduxDispatch();
+
+    return useMemo(() => bindActionCreators(actionCreators as any, dispatch), [
+        actionCreators,
+    ]);
 }
 
 function useForceRender() {

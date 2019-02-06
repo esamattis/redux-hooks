@@ -1,6 +1,10 @@
 import {createStore} from "redux";
 import {render, fireEvent, cleanup} from "react-testing-library";
-import {HooksProvider, useReduxState} from "../src/redux-hooks";
+import {
+    HooksProvider,
+    useReduxState,
+    useActionCreators,
+} from "../src/redux-hooks";
 import React, {useState, useCallback} from "react";
 
 afterEach(cleanup);
@@ -425,4 +429,71 @@ test("render re-executes map state", () => {
     const user = rtl.getByTestId("user");
 
     expect(user.innerHTML).toEqual("Hi, my name is user B (b)");
+});
+
+test("useActionCreators", async () => {
+    interface State {
+        foo: string;
+    }
+
+    const initialState: State = {
+        foo: "foo",
+    };
+
+    const ActionCreators = {
+        setFoo(foo: string) {
+            return {type: "NEW_FOO", foo};
+        },
+    };
+
+    function reducer(state: State | undefined, action: any): State {
+        state = state || initialState;
+
+        if (action.type === "NEW_FOO") {
+            return {...state, foo: action.foo};
+        }
+
+        return state;
+    }
+
+    const store = createStore(reducer);
+
+    const actionsRefs: any[] = [];
+
+    function Thing() {
+        const foo = useReduxState((s: State) => s.foo);
+        const actions = useActionCreators(ActionCreators);
+
+        actionsRefs.push(actions);
+
+        return (
+            <button
+                data-testid="button"
+                onClick={() => {
+                    actions.setFoo("newfoo");
+                }}
+            >
+                {foo}
+            </button>
+        );
+    }
+
+    function App() {
+        return (
+            <HooksProvider store={store as any /* wtf */}>
+                <Thing />
+            </HooksProvider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    await nextTick(); // wtf effect is not executed otherwise
+
+    fireEvent.click(rtl.getByTestId("button"));
+
+    expect(rtl.getByTestId("button").innerHTML).toEqual("newfoo");
+
+    expect(actionsRefs.length).toEqual(2);
+    expect(actionsRefs[0]).toBe(actionsRefs[1]);
 });
