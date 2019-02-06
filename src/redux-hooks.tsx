@@ -27,8 +27,8 @@ interface ContextType {
     updaters: UpdatersMap;
 }
 
-interface MapState<T> {
-    (state: any): T;
+interface MapState<T, D extends any[]> {
+    (state: any, ...args: D): T;
 }
 
 class NoProviderError extends Error {
@@ -142,7 +142,9 @@ function useForceRender() {
     };
 }
 
-export function useReduxState<T = any>(mapState?: MapState<T>): T {
+export function useReduxState<T, D extends Array<any>>(
+    mapState?: MapState<T, D>,
+): T {
     if (process.env.NODE_ENV !== "production") {
         console.warn(
             "@epeli/redux-hooks: useReduxState() has been renamed to useMapState()",
@@ -154,7 +156,10 @@ export function useReduxState<T = any>(mapState?: MapState<T>): T {
 /**
  * Use part of the redux state
  */
-export function useMapState<T = any>(mapState?: MapState<T>): T {
+export function useMapState<D extends any[], T = any>(
+    mapState?: MapState<T, D>,
+    deps?: D,
+): T {
     const {store, updaters} = useContext(StoreContext);
 
     if (!store) {
@@ -168,18 +173,33 @@ export function useMapState<T = any>(mapState?: MapState<T>): T {
      */
     const getMappedValue = (): T => {
         const state = store.getState();
-        if (mapState) {
-            return mapState(state);
+
+        if (!mapState) {
+            return state;
         }
-        return state;
+
+        if (deps) {
+            return mapState(state, ...(deps || []));
+        }
+
+        return (mapState as any)(state);
     };
 
+    const prevDepsRef = useRef<D | undefined>(undefined);
     const prevRef = useRef<T | Nil>(nil);
     const cacheRef = useRef<T | Nil>(nil);
 
     // Set initial mapped state for the first render
     if (prevRef.current === nil) {
         prevRef.current = cacheRef.current = getMappedValue();
+    }
+
+    if (deps) {
+        if (shallowEqual(prevDepsRef.current, deps)) {
+            cacheRef.current = prevRef.current;
+        } else {
+            prevDepsRef.current = deps;
+        }
     }
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import {createStore} from "redux";
-import {render, fireEvent, cleanup} from "react-testing-library";
+import {act, render, fireEvent, cleanup} from "react-testing-library";
 import {
     HooksProvider,
     useMapState,
@@ -496,4 +496,62 @@ test("useActionCreators", async () => {
 
     expect(actionsRefs.length).toEqual(2);
     expect(actionsRefs[0]).toBe(actionsRefs[1]);
+});
+
+test("can use deps", () => {
+    const mapSpy = jest.fn();
+
+    interface State {
+        foo: string;
+    }
+    const initialState: State = {
+        foo: "foo",
+    };
+
+    function reducer() {
+        return initialState;
+    }
+
+    const store = createStore(reducer);
+
+    function selector(state: State, arg: string, num: number) {
+        mapSpy();
+        return state.foo + arg.toLocaleLowerCase();
+    }
+
+    function Thing(props: {s: string}) {
+        const foo = useMapState(selector, [props.s, 2]);
+
+        return <div data-testid="content">{foo}</div>;
+    }
+
+    let setState = (s: string) => {};
+
+    function App() {
+        const [s, _setState] = useState("bar");
+        setState = _setState;
+
+        return (
+            <HooksProvider store={store}>
+                <Thing s={s} />
+            </HooksProvider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    expect(mapSpy).toHaveBeenCalledTimes(1);
+    expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
+
+    act(() => {
+        setState("baz");
+    });
+    expect(mapSpy).toHaveBeenCalledTimes(2);
+    expect(rtl.getByTestId("content").innerHTML).toBe("foobaz");
+
+    act(() => {
+        setState("BAR");
+    });
+    expect(mapSpy).toHaveBeenCalledTimes(3);
+    expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
 });
