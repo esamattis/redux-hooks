@@ -153,6 +153,17 @@ export function useReduxState<T, D extends Array<any>>(
     return useMapState(mapState);
 }
 
+function useDidDepsChange(deps: any[] | undefined) {
+    if (!deps) {
+        return false;
+    }
+
+    const memoDeps = useMemo(() => deps, deps);
+
+    // changed when useMemo returns the same deps reference
+    return memoDeps == deps;
+}
+
 /**
  * Use part of the redux state
  */
@@ -162,11 +173,29 @@ export function useMapState<D extends any[], T = any>(
 ): T {
     const {store, updaters} = useContext(StoreContext);
 
+    /**
+     * Reference to the previously mapped state
+     */
+    const prevRef = useRef<T | Nil>(nil);
+
+    /**
+     * When this is set can bailout state mapping and just return this
+     */
+    const bailoutRef = useRef<T | Nil>(nil);
+
+    /**
+     * Trigger render from store updates
+     */
+    const triggerRender = useForceRender();
+
+    /**
+     * Detect deps change when using the deps array
+     */
+    const depsChanged = useDidDepsChange(deps);
+
     if (!store) {
         throw new NoProviderError();
     }
-
-    const triggerRender = useForceRender();
 
     /**
      * Get mapped value from the state
@@ -179,28 +208,15 @@ export function useMapState<D extends any[], T = any>(
         }
 
         if (deps) {
-            return mapState(state, ...(deps || []));
+            return mapState(state, ...deps);
         }
 
-        return (mapState as any)(state);
+        return (mapState as Function)(state);
     };
 
-    const prevRef = useRef<T | Nil>(nil);
-    const cacheRef = useRef<T | Nil>(nil);
-
-    // Set initial mapped state for the first render
+    // Set initial mapped states for the first render
     if (prevRef.current === nil) {
-        prevRef.current = cacheRef.current = getMappedValue();
-    }
-
-    const memoDeps = useMemo(() => deps, deps || []);
-
-    if (deps) {
-        // when the memoDeps did not change to current deps we can reuse the
-        // previous mapped state
-        if (memoDeps !== deps) {
-            cacheRef.current = prevRef.current;
-        }
+        prevRef.current = bailoutRef.current = getMappedValue();
     }
 
     useEffect(() => {
@@ -209,14 +225,14 @@ export function useMapState<D extends any[], T = any>(
             const next = getMappedValue();
 
             if (!shallowEqual(prevRef.current, next)) {
-                cacheRef.current = next;
+                bailoutRef.current = next;
                 prevRef.current = next;
                 triggerRender();
             }
         };
 
-        // Mutate the updaters map so the subscription in provider can update
-        // this hook
+        // Mutate the updaters map so the subscription in the provider can
+        // update this hook
         const id = ++SEQ;
         updaters.set(id, update);
 
@@ -226,15 +242,20 @@ export function useMapState<D extends any[], T = any>(
 
             // clear cached on store change
             prevRef.current = nil;
-            cacheRef.current = nil;
+            bailoutRef.current = nil;
         };
     }, [store]);
 
-    if (cacheRef.current !== nil) {
-        // First render or store triggered the update. Already computed during
-        // the shallow equal check.
-        const ret = cacheRef.current;
-        cacheRef.current = nil;
+    // Bailout with the previously mapped state if we have deps and they did not
+    // change
+    if (deps && !depsChanged && bailoutRef.current === nil) {
+        bailoutRef.current = prevRef.current;
+    }
+
+    // Use the bailout if we have one
+    if (bailoutRef.current !== nil) {
+        const ret = bailoutRef.current;
+        bailoutRef.current = nil;
         return ret;
     }
 
