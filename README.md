@@ -59,9 +59,9 @@ Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree
 
 Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
 
-## 🤔 Why Yet Another Redux Hooks implementation?
+## 🤔 Why yet another Redux Hooks implementation?
 
-All the others I checked had the zombie child bug.
+All the others I checked had the zombie child bug or had poor performance.
 
 This also an experiment for the future of the react-redux:
 
