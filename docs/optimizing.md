@@ -18,15 +18,15 @@ Without the dependencies array the state is mapped always when the component
 renders.
 
 Unlike in the useMemo hook the depencencies array is spread to the mapping
-function so you can share selectors with multiple components easily.
+function so you can share getters with multiple components easily.
 
 ```ts
-function selectUser(state, userId) {
+function getUser(state, userId) {
     return state.users[userId];
 }
 
 function User(props) {
-    const user = useMapState(selectUser, [props.userId]);
+    const user = useMapState(getUser, [props.userId]);
     return <div>{user.name}</div>;
 }
 ```
