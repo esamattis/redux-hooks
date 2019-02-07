@@ -142,19 +142,39 @@ export function useReduxDispatch() {
 }
 
 // tslint:disable:react-hooks-nesting
-function createUseSelector<State>() {
+export function createUseSelector<State>() {
     return function useSelector<T extends Tuple<(state: State) => any>, R>(
         selectors: T,
-        produce: (props: FlattenToReturnTypes<T>) => R,
+        mapState: (props: FlattenToReturnTypes<T>) => R,
         deps?: any[],
     ): R {
+        const ref = useRef<{
+            result: R | Nil;
+            prevComputedDeps: any;
+        }>({
+            result: nil,
+            prevComputedDeps: null,
+        });
+
         return useMapState(
             (state: State) => {
-                const commputedDeps = selectors.map(sel => sel(state)) as any;
+                const computedDeps = selectors.map(sel => sel(state)) as any;
+                const depsChanged = !shallowEqual(
+                    computedDeps,
+                    ref.current.prevComputedDeps,
+                );
 
-                return useMemo(() => {
-                    return produce(commputedDeps);
-                }, commputedDeps);
+                if (depsChanged) {
+                    ref.current.prevComputedDeps = computedDeps;
+                }
+
+                if (!depsChanged && ref.current.result !== nil) {
+                    return ref.current.result;
+                }
+
+                const res = mapState(computedDeps);
+                ref.current.result = res;
+                return res as any;
             },
             deps as any,
         );
