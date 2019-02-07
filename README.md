@@ -88,9 +88,11 @@ function useUser(userId) {
 }
 ```
 
-## useSelect
+## Memoizing
 
-Memoizing `useSelect(select, produce)` hook is provided which is inspired
+### useSelect hook
+
+A memoizing `useSelect(select, produce)` hook is provided which is inspired
 by the excellent [reselect][] library but provides much simpler api.
 
 ```ts
@@ -125,6 +127,24 @@ const useAppSelect = createUseSelect<AppState>();
 ```
 
 [reselect]: https://github.com/reduxjs/reselect
+
+### Using Reselect
+
+If the useSelect is not enough you can just use the real reselect library
+with the useMemo hook
+
+```ts
+const selector = useMemo(
+    () =>
+        createSelector(
+            state => state.users[props.userId],
+            user => somethingExpensive(user),
+        ),
+    [props.userId],
+);
+
+const user = useMapState(selector);
+```
 
 ## 📚 Examples
 
