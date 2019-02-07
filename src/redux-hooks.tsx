@@ -11,6 +11,24 @@ declare const process: any;
  */
 type Tuple<T = any> = [T] | T[];
 
+/**
+ * Pick only functions from an object and remove their return values
+ */
+type RemoveReturnTypes<T> = {
+    [K in keyof T]: T[K] extends (...args: any) => any
+        ? (...args: Parameters<T[K]>) => void
+        : never
+};
+
+/**
+ * Flatten functions to their return types
+ */
+type FlattenToReturnTypes<T> = {
+    [K in keyof T]: T[K] extends (...args: any) => any
+        ? ReturnType<T[K]>
+        : never
+};
+
 /** id sequence */
 let SEQ = 0;
 
@@ -123,23 +141,11 @@ export function useReduxDispatch() {
     return useDispatch();
 }
 
-type PickFunctions<T> = {
-    [K in keyof T]: T[K] extends (...args: any) => any
-        ? (...args: Parameters<T[K]>) => void
-        : never
-};
-
-type PickReturnValues<T> = {
-    [K in keyof T]: T[K] extends (...args: any) => any
-        ? ReturnType<T[K]>
-        : never
-};
-
 // tslint:disable:react-hooks-nesting
 function createUseSelector<State>() {
     return function useSelector<T extends Tuple<(state: State) => any>, R>(
         selectors: T,
-        produce: (props: PickReturnValues<T>) => R,
+        produce: (props: FlattenToReturnTypes<T>) => R,
         deps?: any[],
     ): R {
         return useMapState(
@@ -168,8 +174,8 @@ function Lol() {
 /**
  * Bound actions creators object to Redux dispatch. Memoized.
  */
-export function useActionCreators<T>(actionCreators: T): PickFunctions<T> {
-    const dispatch = useDispatch();
+export function useActionCreators<T>(actionCreators: T): RemoveReturnTypes<T> {
+    const dispatch = useReduxDispatch();
 
     return useMemo(() => bindActionCreators(actionCreators as any, dispatch), [
         actionCreators,
