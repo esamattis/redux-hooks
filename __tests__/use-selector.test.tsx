@@ -1,10 +1,6 @@
 import {render, cleanup, testHook, act} from "react-testing-library";
 import React, {useState} from "react";
-import {
-    HooksProvider,
-    useMapState,
-    createUseSelector,
-} from "../src/redux-hooks";
+import {HooksProvider, useMapState, createUseSelect} from "../src/redux-hooks";
 import {createStore, Store} from "redux";
 // tslint:disable:react-hooks-nesting
 
@@ -74,7 +70,7 @@ function createLazyUseState<T>(initialState: T): [(s: T) => void, () => T] {
     ];
 }
 
-const useSelector = createUseSelector<State>();
+const useSelector = createUseSelect<State>();
 
 test("provides the context default value", () => {
     let res: any;
@@ -217,7 +213,7 @@ test("store update can produce new mapped state", () => {
     expect(res).toEqual("change2bar");
 });
 
-test("map is not executed if selectors dont produce new value from RENDER update", () => {
+test("map is not executed if selector dont produce new value from RENDER update", () => {
     let res: any;
     const spy = jest.fn();
     const renderSpy = jest.fn();
@@ -252,7 +248,7 @@ test("map is not executed if selectors dont produce new value from RENDER update
     expect(renderSpy).toBeCalledTimes(2);
 });
 
-test("map is not executed if selectors dont produce new value from STORE update", () => {
+test("map is not executed if selector dont produce new value from STORE update", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
