@@ -135,51 +135,32 @@ type PickReturnValues<T> = {
         : never
 };
 
-type PickReturnValues2<T extends Tuple> = {
-    [K in keyof T]: T[K] extends (...args: any) => any
-        ? ReturnType<T[K]>
-        : never
-};
-
-type Foo = PickReturnValues2<[() => number]>;
-
+// tslint:disable:react-hooks-nesting
 function createUseSelector<State>() {
-    return function useSelector<
-        T extends ((state: State) => any)[] | [(state: State) => any],
-        R
-    >(
+    return function useSelector<T extends Tuple<(state: State) => any>, R>(
         selectors: T,
-        produce: (...props: PickReturnValues2<T>) => R,
+        produce: (props: PickReturnValues<T>) => R,
         deps?: any[],
     ): R {
-        // tslint:disable-next-line:react-hooks-nesting
         return useMapState(
-            state => {
-                // tslint:disable-next-line:react-hooks-nesting
-                const computedDepsRef = useRef<any>(null);
+            (state: State) => {
+                const commputedDeps = selectors.map(sel => sel(state)) as any;
 
-                const computedDeps: PickReturnValues<T> = {} as any;
-
-                for (const key in selectors) {
-                    computedDeps[key] = selectors[key](state);
-                }
-
-                if (!shallowEqual(computedDeps, computedDepsRef.current)) {
-                    computedDepsRef.current = produce(computedDeps);
-                }
-
-                return computedDepsRef.current;
+                return useMemo(() => {
+                    return produce(commputedDeps);
+                }, commputedDeps);
             },
             deps as any,
         );
     };
 }
+// tslint:enable:react-hooks-nesting
 
 const useSelector = createUseSelector<{foo: number}>();
 
 function Lol() {
-    const out = useSelector([s => s.foo, () => /Dfd/], props => {
-        console.log(props.joo);
+    const out = useSelector([s => s.foo, () => /Dfd/], ([a, b]) => {
+        console.log(a, b);
         return /sdf/;
     });
 }
