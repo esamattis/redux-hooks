@@ -87,10 +87,14 @@ test("provides the context default value", () => {
         const count = useTestState();
 
         res = useSelector(
-            [s => s.foo, s => s.bar, () => count],
-            ([a, b, c]) => {
+            s => ({
+                a: s.foo,
+                b: s.bar,
+                c: count,
+            }),
+            selection => {
                 spy();
-                return a + b + c;
+                return selection.a + selection.b + selection.c;
             },
         );
     });
@@ -122,10 +126,14 @@ test("dependencies can prevent update", () => {
         const count = useTestState();
 
         res = useSelector(
-            [s => s.foo, s => s.bar, () => count],
-            ([a, b, c]) => {
+            s => ({
+                a: s.foo,
+                b: s.bar,
+                c: count,
+            }),
+            selection => {
                 spy();
-                return a + b + c;
+                return selection.a + selection.b + selection.c;
             },
             [], // empty array prevent update
         );
@@ -150,10 +158,14 @@ test("dependencies can be used correctly", () => {
         const count = useTestState();
 
         res = useSelector(
-            [s => s.foo, s => s.bar, () => count],
-            ([a, b, c]) => {
+            s => ({
+                a: s.foo,
+                b: s.bar,
+                c: count,
+            }),
+            selection => {
                 spy();
-                return a + b + c;
+                return selection.a + selection.b + selection.c;
             },
             // count is declared as dependency so is executed when count changes
             [count],
@@ -175,10 +187,13 @@ test("store update can produce new mapped state", () => {
 
     withProvider(store, () => {
         res = useSelector(
-            [s => s.foo, s => s.bar],
-            ([a, b]) => {
+            s => ({
+                a: s.foo,
+                b: s.bar,
+            }),
+            selection => {
                 spy();
-                return a + b;
+                return selection.a + selection.b;
             },
             [1],
         );
@@ -215,10 +230,13 @@ test("map is not executed if selectors dont produce new value from RENDER update
         renderSpy();
 
         res = useSelector(
-            [s => s.foo, s => s.foo],
-            ([a, b]) => {
+            s => ({
+                a: s.foo,
+                b: s.foo,
+            }),
+            selection => {
                 spy();
-                return a + b;
+                return selection.a + selection.b;
             },
             [], // empty array prevent update
         );
@@ -241,10 +259,13 @@ test("map is not executed if selectors dont produce new value from STORE update"
 
     withProvider(store, () => {
         res = useSelector(
-            [s => s.foo, s => s.foo],
-            ([a, b]) => {
+            s => ({
+                a: s.foo,
+                b: s.foo,
+            }),
+            selection => {
                 spy();
-                return a + b;
+                return selection.a + selection.b;
             },
             [], // empty array prevent update
         );

@@ -143,36 +143,37 @@ export function useReduxDispatch() {
 
 // tslint:disable:react-hooks-nesting
 export function createUseSelector<State>() {
-    return function useSelector<T extends Tuple<(state: State) => any>, R>(
-        selectors: T,
-        mapState: (props: FlattenToReturnTypes<T>) => R,
+    return function useSelector<Selection, Result>(
+        select: (state: State) => Selection,
+        produce: (selection: Selection) => Result,
         deps?: any[],
-    ): R {
+    ): Result {
         const ref = useRef<{
-            result: R | Nil;
-            prevComputedDeps: any;
+            result: Result | Nil;
+            prevSelection: Selection | Nil;
         }>({
             result: nil,
-            prevComputedDeps: null,
+            prevSelection: nil,
         });
 
         return useMapState(
             (state: State) => {
-                const computedDeps = selectors.map(sel => sel(state)) as any;
-                const depsChanged = !shallowEqual(
-                    computedDeps,
-                    ref.current.prevComputedDeps,
+                const selection = select(state);
+
+                const selectionChanged = !shallowEqual(
+                    selection,
+                    ref.current.prevSelection,
                 );
 
-                if (depsChanged) {
-                    ref.current.prevComputedDeps = computedDeps;
+                if (selectionChanged) {
+                    ref.current.prevSelection = selection;
                 }
 
-                if (!depsChanged && ref.current.result !== nil) {
+                if (!selectionChanged && ref.current.result !== nil) {
                     return ref.current.result;
                 }
 
-                const res = mapState(computedDeps);
+                const res = produce(selection);
                 ref.current.result = res;
                 return res as any;
             },
@@ -183,13 +184,6 @@ export function createUseSelector<State>() {
 // tslint:enable:react-hooks-nesting
 
 const useSelector = createUseSelector<{foo: number}>();
-
-function Lol() {
-    const out = useSelector([s => s.foo, () => /Dfd/], ([a, b]) => {
-        console.log(a, b);
-        return /sdf/;
-    });
-}
 
 /**
  * Bound actions creators object to Redux dispatch. Memoized.
