@@ -50,7 +50,7 @@ efficiently. Read more about it
 
 ## 🚀 Optimizing rendering
 
-That's enough for most use cases but if you want to get everything out off
+The abobe API is enough for most use cases but if you want to get everything out off
 your hooks please read the [optimizations docs](docs/optimizing.md).
 
 ## 📚 Examples
