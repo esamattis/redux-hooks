@@ -87,7 +87,7 @@ If the useSelect is not enough you can just use the real reselect library
 with the useMemo hook
 
 ```ts
-const selector = useMemo(
+const selectUser = useMemo(
     () =>
         createSelector(
             state => state.users[props.userId],
@@ -96,5 +96,5 @@ const selector = useMemo(
     [props.userId],
 );
 
-const user = useMapState(selector);
+const modifiedUser = useMapState(selectUser);
 ```
