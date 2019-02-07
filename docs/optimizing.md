@@ -1,5 +1,7 @@
 # 🚀 Optimizing rendering
 
+## Deps array
+
 You can optimize state mapping by passing a dependency array which works like
 in the `useMemo()` hook.
 
@@ -39,9 +41,7 @@ function useUser(userId) {
 }
 ```
 
-## Memoizing
-
-### useSelect hook
+## Memoizing with useSelect hook
 
 A memoizing `useSelect(select, produce)` hook is provided which is inspired
 by the excellent [reselect][] library but provides a much simpler api.
