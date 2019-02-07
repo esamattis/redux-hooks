@@ -133,7 +133,7 @@ type PickFunctions<T> = {
  * Bound actions creators object to Redux dispatch. Memoized.
  */
 export function useActionCreators<T>(actionCreators: T): PickFunctions<T> {
-    const dispatch = useReduxDispatch();
+    const dispatch = useDispatch();
 
     return useMemo(() => bindActionCreators(actionCreators as any, dispatch), [
         actionCreators,
