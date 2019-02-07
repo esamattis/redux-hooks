@@ -129,6 +129,56 @@ type PickFunctions<T> = {
         : never
 };
 
+type PickReturnValues<T> = {
+    [K in keyof T]: T[K] extends (...args: any) => any
+        ? ReturnType<T[K]>
+        : never
+};
+
+function createUseSelector<State>() {
+    return function useSelector<
+        T extends Record<string, (state: State) => any>,
+        R
+    >(
+        selectors: T,
+        produce: (props: PickReturnValues<T>) => R,
+        deps?: any[],
+    ): R {
+        // tslint:disable-next-line:react-hooks-nesting
+        return useMapState(
+            state => {
+                // tslint:disable-next-line:react-hooks-nesting
+                const computedDepsRef = useRef<any>(null);
+
+                const computedDeps: PickReturnValues<T> = {} as any;
+
+                for (const key in selectors) {
+                    computedDeps[key] = selectors[key](state);
+                }
+
+                if (!shallowEqual(computedDeps, computedDepsRef.current)) {
+                    computedDepsRef.current = produce(computedDeps);
+                }
+
+                return computedDepsRef.current;
+            },
+            deps as any,
+        );
+    };
+}
+
+const useSelector = createUseSelector<{foo: number}>();
+
+function Lol() {
+    const out = useSelector(
+        {joo: s => s.foo, dong: s => 3, ding: s => 3},
+        props => {
+            console.log(props.joo);
+            return /sdf/;
+        },
+    );
+}
+
 /**
  * Bound actions creators object to Redux dispatch. Memoized.
  */
