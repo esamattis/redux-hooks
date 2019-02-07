@@ -67,7 +67,8 @@ function User(props) {
 ```
 
 The latter produce function is executed only when the former select function
-returns a new value (shallow equal).
+returns a new value (shallow equal). This is mostly useful for avoiding
+creating new references which can cause useless rendering downstream.
 
 For TypeScript users `createUseSelect` is provided for creating own
 `useSelect` with custom state types:
