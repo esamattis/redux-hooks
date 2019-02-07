@@ -17,8 +17,8 @@ function User(props) {
 ```
 
 Without the dependencies array the state is mapped always when the component
-renders. ⚠️ The map function is executed regardless of the deps array when
-the store state updates.
+renders. When the store state updates the map state function is executed
+regardless of the deps array.
 
 Unlike in the useMemo hook the depencencies array is spread to the mapping
 function so you can share getters with multiple components easily.
