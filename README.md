@@ -80,7 +80,7 @@ function User(props) {
 }
 ```
 
-## 🔧 Custom selector hooks
+## 🔧 Custom Hooks
 
 But instead of sharing selectors I think it's better to just create custom hooks
 
@@ -89,6 +89,44 @@ function useUser(userId) {
     return useMapState(state => state.users[props.userId], [userId]);
 }
 ```
+
+## useSelect
+
+Memoizing `useSelect(select, produce)` hook is provided which is inspired
+by the excellent [reselect][] library but provides much simpler api.
+
+```ts
+import {useSelect} from "@epeli/redux-hooks";
+
+function User(props) {
+    const userWithComments = useSelect(
+        state => ({
+            user: state.users[props.userId],
+            comments: state.commentsByUserId[props.userId],
+        }),
+        selection => ({
+            ...selection.user,
+            comments: selection.comments,
+        }),
+        [props.userId], // deps array is supported here too (optional)
+    );
+
+    return <div>...</div>;
+}
+```
+
+The latter produce function is executed only when the former select function
+returns a new value (shallow equal).
+
+For TypeScript users `createUseSelect` is provided for creating `useSelect`
+with custom state types:
+
+```ts
+import {createUseSelect} from "@epeli/redux-hooks";
+const useAppSelect = createUseSelect<AppState>();
+```
+
+[reselect]: https://github.com/reduxjs/reselect
 
 ## 📚 Examples
 

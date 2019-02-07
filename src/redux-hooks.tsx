@@ -142,8 +142,8 @@ export function useReduxDispatch() {
 }
 
 // tslint:disable:react-hooks-nesting
-export function createUseSelector<State>() {
-    return function useSelector<Selection, Result>(
+export function createUseSelect<State>() {
+    return function useSelect<Selection, Result>(
         select: (state: State) => Selection,
         produce: (selection: Selection) => Result,
         deps?: any[],
@@ -183,7 +183,7 @@ export function createUseSelector<State>() {
 }
 // tslint:enable:react-hooks-nesting
 
-const useSelector = createUseSelector<{foo: number}>();
+export const useSelect = createUseSelect<any>();
 
 /**
  * Bound actions creators object to Redux dispatch. Memoized.
