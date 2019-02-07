@@ -80,8 +80,6 @@ function User(props) {
 }
 ```
 
-## 🔧 Custom Hooks
-
 But instead of sharing selectors I think it's better to just create custom hooks
 
 ```ts
