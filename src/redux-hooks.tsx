@@ -5,6 +5,12 @@ import {shallowEqual} from "./shallow-equal";
 
 declare const process: any;
 
+/**
+ * Tuple constraint
+ * https://github.com/Microsoft/TypeScript/issues/29780
+ */
+type Tuple = [any] | any[];
+
 /** id sequence */
 let SEQ = 0;
 
@@ -142,7 +148,7 @@ function useForceRender() {
     };
 }
 
-export function useReduxState<T, D extends Array<any>>(
+export function useReduxState<D extends Tuple, T = any>(
     mapState?: MapState<T, D>,
 ): T {
     if (process.env.NODE_ENV !== "production") {
@@ -167,7 +173,7 @@ function useDidDepsChange(deps: any[] | undefined) {
 /**
  * Use part of the redux state
  */
-export function useMapState<D extends any[], T = any>(
+export function useMapState<D extends Tuple, T = any>(
     mapState?: MapState<T, D>,
     deps?: D,
 ): T {
