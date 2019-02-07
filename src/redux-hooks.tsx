@@ -9,7 +9,7 @@ declare const process: any;
  * Tuple constraint
  * https://github.com/Microsoft/TypeScript/issues/29780
  */
-type Tuple = [any] | any[];
+type Tuple<T = any> = [T] | T[];
 
 /** id sequence */
 let SEQ = 0;
@@ -135,13 +135,21 @@ type PickReturnValues<T> = {
         : never
 };
 
+type PickReturnValues2<T extends Tuple> = {
+    [K in keyof T]: T[K] extends (...args: any) => any
+        ? ReturnType<T[K]>
+        : never
+};
+
+type Foo = PickReturnValues2<[() => number]>;
+
 function createUseSelector<State>() {
     return function useSelector<
-        T extends Record<string, (state: State) => any>,
+        T extends ((state: State) => any)[] | [(state: State) => any],
         R
     >(
         selectors: T,
-        produce: (props: PickReturnValues<T>) => R,
+        produce: (...props: PickReturnValues2<T>) => R,
         deps?: any[],
     ): R {
         // tslint:disable-next-line:react-hooks-nesting
@@ -170,13 +178,10 @@ function createUseSelector<State>() {
 const useSelector = createUseSelector<{foo: number}>();
 
 function Lol() {
-    const out = useSelector(
-        {joo: s => s.foo, dong: s => 3, ding: s => 3},
-        props => {
-            console.log(props.joo);
-            return /sdf/;
-        },
-    );
+    const out = useSelector([s => s.foo, () => /Dfd/], props => {
+        console.log(props.joo);
+        return /sdf/;
+    });
 }
 
 /**
