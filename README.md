@@ -3,8 +3,9 @@
 React Hooks implementation for Redux that does not suffer from the tearing /
 "zombie child component" problems.
 
-It also implements basic performance optimizations eg. does not render when the
-map state function does not produce new value (shallow equal test).
+It also implements performance optimizations eg. does not render when the map
+state function does not produce new value and allows advanced
+optimizations with memoizing and dependency arrays.
 
 ## 📦 Install
 
@@ -47,86 +48,10 @@ do not use subscriptions and it's impossible to implement Redux hooks without
 efficiently. Read more about it
 [here](https://github.com/reduxjs/react-redux/issues/1177).
 
-## 🚀 Optimizing
+## 🚀 Optimizing rendering
 
-You can optimize state mapping by passing a dependency array which works like
-in the `useMemo()` hook.
-
-```ts
-function User(props) {
-    const user = useMapState(
-        state => state.users[props.userId],
-        [props.userId], // deps
-    );
-
-    return <div>{user.name}</div>;
-}
-```
-
-Without the dependencies array the state is mapped always when the component
-renders.
-
-Unlike in the useMemo hook the depencencies array is spread to the mapping
-function so you can share selectors with multiple components easily.
-
-```ts
-function selectUser(state, userId) {
-    return state.users[userId];
-}
-
-function User(props) {
-    const user = useMapState(selectUser, [props.userId]);
-    return <div>{user.name}</div>;
-}
-```
-
-## 🔧 Custom Hooks
-
-But instead of sharing selectors I think it's better to just create custom hooks
-
-```ts
-function useUser(userId) {
-    return useMapState(state => state.users[props.userId], [userId]);
-}
-```
-
-## useSelect
-
-Memoizing `useSelect(select, produce)` hook is provided which is inspired
-by the excellent [reselect][] library but provides much simpler api.
-
-```ts
-import {useSelect} from "@epeli/redux-hooks";
-
-function User(props) {
-    const userWithComments = useSelect(
-        state => ({
-            user: state.users[props.userId],
-            comments: state.commentsByUserId[props.userId],
-        }),
-        selection => ({
-            ...selection.user,
-            comments: selection.comments,
-        }),
-        [props.userId], // deps array is supported here too (optional)
-    );
-
-    return <div>...</div>;
-}
-```
-
-The latter produce function is executed only when the former select function
-returns a new value (shallow equal).
-
-For TypeScript users `createUseSelect` is provided for creating `useSelect`
-with custom state types:
-
-```ts
-import {createUseSelect} from "@epeli/redux-hooks";
-const useAppSelect = createUseSelect<AppState>();
-```
-
-[reselect]: https://github.com/reduxjs/reselect
+That's enough for most use cases but if you want to get everything out off
+your hooks please read the [optimizations docs](docs/optimizing.md).
 
 ## 📚 Examples
 
