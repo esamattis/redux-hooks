@@ -3,8 +3,9 @@
 React Hooks implementation for Redux that does not suffer from the tearing /
 "zombie child component" problems.
 
-It also implements basic performance optimizations eg. does not render when the
-map state function does not produce new value (shallow equal test).
+It also implements performance optimizations eg. does not render when the map
+state function does not produce new value and allows advanced
+optimizations with memoizing and dependency arrays.
 
 ## 📦 Install
 
@@ -49,8 +50,8 @@ efficiently. Read more about it
 
 ## 🚀 Optimizing rendering
 
-That enough for most uses but if you want to get everything out off your hooks
-please read the [optimizations docs](docs/optimizing.md).
+That's enough for most use cases but if you want to get everything out off
+your hooks please read the [optimizations docs](docs/optimizing.md).
 
 ## 📚 Examples
 
