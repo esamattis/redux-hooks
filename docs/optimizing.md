@@ -68,7 +68,7 @@ function User(props) {
 
 The latter produce function is executed only when the former select function
 returns a new value (shallow equal). This is mostly useful for avoiding
-creating new references which can cause useless rendering downstream.
+creating new references which can cause [useless rendering downstream][pure].
 
 For TypeScript users `createUseSelect` is provided for creating own
 `useSelect` with custom state types:
@@ -79,6 +79,7 @@ const useAppSelect = createUseSelect<AppState>();
 ```
 
 [reselect]: https://github.com/reduxjs/reselect
+[pure]: https://medium.com/@esamatti/react-js-pure-render-performance-anti-pattern-fb88c101332f
 
 ## Using Reselect
 
