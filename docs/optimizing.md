@@ -54,7 +54,7 @@ creating new references which can cause [useless rendering downstream][pure].
 
 There is a `usePassiveMapState` hook which is passive version of
 `useMapState` that does not subscribe to store updates at all. It must be
-used in conjunction to an active hook `useMapState` or use `useSelect`. It
+used in conjunction to an active hook `useMapState` or `useSelect`. It
 executes only when the dependencies passed to it change.
 
 This is for really advanced scenarios where you know exactly when some part
