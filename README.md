@@ -1,7 +1,7 @@
 # ⚓ @epeli/redux-hooks
 
 React Hooks implementation for Redux that does not suffer from the tearing /
-"zombie child component" problems.
+"zombie child component" problems. [Read more](#-why-yet-another-redux-hooks-implementation).
 
 It also implements performance optimizations eg. does not render when the map
 state function does not produce new value and allows advanced
@@ -50,7 +50,7 @@ efficiently. Read more about it
 
 ## 🚀 Optimizing rendering
 
-That's enough for most use cases but if you want to get everything out off
+The above API is enough for most use cases but if you want to get everything out off
 your hooks please read the [optimizations docs](docs/optimizing.md).
 
 ## TypeScript support
@@ -68,9 +68,11 @@ Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree
 
 Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
 
-## 🤔 Why Yet Another Redux Hooks implementation?
+## 🤔 Why yet another Redux Hooks implementation?
 
-All the others I checked had the zombie child bug.
+All the others I checked had the zombie child bug, poor performance or were missing TypeScript types.
+
+Even the `facebookincubator/redux-react-hook` one has the zombie bug which is stated in their [FAQ](https://github.com/facebookincubator/redux-react-hook/blob/da74ab765c200133f86b629869ba1fdbf46afa97/README.md#how-does-this-compare-to-react-redux). This one guarantees data flow top down like the official react-redux one does.
 
 This also an experiment for the future of the react-redux:
 

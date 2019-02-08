@@ -15,33 +15,10 @@ function User(props) {
 ```
 
 Without the dependencies array the state is mapped always when the component
-renders.
+renders. When the store state updates the map state function is executed
+regardless of the deps array.
 
-Unlike in the useMemo hook the depencencies array is spread to the mapping
-function so you can share getters with multiple components easily.
-
-```ts
-function getUser(state, userId) {
-    return state.users[userId];
-}
-
-function User(props) {
-    const user = useMapState(getUser, [props.userId]);
-    return <div>{user.name}</div>;
-}
-```
-
-But instead of sharing selectors I think it's better to just create custom hooks
-
-```ts
-function useUser(userId) {
-    return useMapState(state => state.users[props.userId], [userId]);
-}
-```
-
-## Memoizing
-
-### useSelect hook
+## Memoizing with useSelect hook
 
 A memoizing `useSelect(select, produce)` hook is provided which is inspired
 by the excellent [reselect][] library but provides a much simpler api.
@@ -79,7 +56,7 @@ If the useSelect is not enough you can just use the real reselect library
 with the useMemo hook
 
 ```ts
-const selector = useMemo(
+const selectUser = useMemo(
     () =>
         createSelector(
             state => state.users[props.userId],
@@ -88,5 +65,5 @@ const selector = useMemo(
     [props.userId],
 );
 
-const user = useMapState(selector);
+const modifiedUser = useMapState(selectUser);
 ```
