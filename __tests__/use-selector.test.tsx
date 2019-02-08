@@ -1,6 +1,11 @@
-import {render, cleanup, testHook, act} from "react-testing-library";
+import {render, cleanup, act} from "react-testing-library";
 import React, {useState} from "react";
-import {HooksProvider, useMapState, createUseSelect} from "../src/redux-hooks";
+import {
+    HooksProvider,
+    useMapState,
+    createUseSelect,
+    createUsePassiveMapState,
+} from "../src/redux-hooks";
 import {createStore, Store} from "redux";
 // tslint:disable:react-hooks-nesting
 
@@ -71,6 +76,7 @@ function createLazyUseState<T>(initialState: T): [(s: T) => void, () => T] {
 }
 
 const useSelector = createUseSelect<State>();
+const usePassive = createUsePassiveMapState<State>();
 
 test("provides the context default value", () => {
     let res: any;
@@ -277,5 +283,91 @@ test("map is not executed if selector dont produce new value from STORE update",
     );
 
     expect(res).toEqual("foofoo");
+    expect(spy).toBeCalledTimes(1);
+});
+
+test("usePassiveMapState does not map on store update", () => {
+    let res: any;
+    const spy = jest.fn();
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        res = usePassive(
+            s => {
+                spy();
+                return s.foo;
+            },
+            [], // empty array prevent update
+        );
+    });
+
+    expect(res).toEqual("foo");
+    expect(spy).toBeCalledTimes(1);
+
+    store.dispatch(
+        updateStore(s => {
+            return {...s, foo: "change"};
+        }),
+    );
+
+    expect(res).toEqual("foo");
+    expect(spy).toBeCalledTimes(1);
+});
+
+test("usePassiveMapState does not map on render", () => {
+    let res: any;
+    const spy = jest.fn();
+    const renderSpy = jest.fn();
+    const store = createTestStore();
+    const [setState, useTestState] = createLazyUseState(0);
+
+    withProvider(store, () => {
+        const count = useTestState();
+        renderSpy();
+        res = usePassive(
+            s => {
+                spy();
+                return s.foo;
+            },
+            [], // empty array prevent update
+        );
+    });
+
+    expect(res).toEqual("foo");
+    expect(spy).toBeCalledTimes(1);
+
+    setState(2);
+
+    expect(res).toEqual("foo");
+    expect(spy).toBeCalledTimes(1);
+});
+
+test("usePassiveMapState maps on deps change", () => {
+    let res: any;
+    const spy = jest.fn();
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        const bar = useMapState(s => s.bar);
+
+        res = usePassive(
+            s => {
+                spy();
+                return s.foo;
+            },
+            [3], // empty array prevent update
+        );
+    });
+
+    expect(res).toEqual("foo");
+    expect(spy).toBeCalledTimes(1);
+
+    store.dispatch(
+        updateStore(s => {
+            return {...s, foo: "change"};
+        }),
+    );
+
+    expect(res).toEqual("foo");
     expect(spy).toBeCalledTimes(1);
 });

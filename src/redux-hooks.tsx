@@ -1,3 +1,4 @@
+// tslint:disable:react-hooks-nesting
 import {Store, bindActionCreators} from "redux";
 import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect, useRef, useMemo} from "react";
@@ -132,7 +133,6 @@ export function useDispatch() {
     return store.dispatch;
 }
 
-// tslint:disable:react-hooks-nesting
 export function createUseSelect<State>() {
     return function useSelect<Selection, Result>(
         select: (state: State) => Selection,
@@ -172,9 +172,6 @@ export function createUseSelect<State>() {
         );
     };
 }
-// tslint:enable:react-hooks-nesting
-
-export const useSelect = createUseSelect<any>();
 
 /**
  * Bound actions creators object to Redux dispatch. Memoized.
@@ -206,8 +203,7 @@ function useDidDepsChange(deps: any[] | undefined) {
     return memoDeps == deps;
 }
 
-// tslint:disable:react-hooks-nesting
-export function createMapState<State>() {
+export function createUseMapState<State>() {
     return function useMapState<Deps extends Tuple, Result = any>(
         mapState?: MapState<State, Deps, Result>,
         deps?: Deps,
@@ -305,6 +301,31 @@ export function createMapState<State>() {
         return (prevRef.current = getMappedValue());
     };
 }
-// tslint:enalbe:react-hooks-nesting
 
-export const useMapState = createMapState<any>();
+export function createUsePassiveMapState<State>() {
+    return function usePassiveMapState<Deps extends Tuple<any>, Result = any>(
+        mapState: MapState<State, Deps, Result>,
+        deps: Deps,
+    ): Result {
+        const {store} = useContext(StoreContext);
+
+        if (!store) {
+            throw new NoProviderError();
+        }
+
+        // XXX getting weird type errors without this cast
+        const anyMapState: any = mapState;
+
+        if (deps) {
+            return useMemo(() => {
+                return anyMapState(store.getState(), deps);
+            }, deps);
+        }
+
+        return anyMapState(store.getState(), []);
+    };
+}
+
+export const useMapState = createUseMapState<any>();
+export const usePassiveMapState = createUsePassiveMapState<any>();
+export const useSelect = createUseSelect<any>();
