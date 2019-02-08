@@ -132,14 +132,6 @@ export function useDispatch() {
     return store.dispatch;
 }
 
-export function useReduxDispatch() {
-    if (process.env.NODE_ENV !== "production") {
-        console.warn(
-            "@epeli/redux-hooks: useReduxDispatch() has been renamed to useDispatch()",
-        );
-    }
-    return useDispatch();
-}
 
 // tslint:disable:react-hooks-nesting
 export function createUseSelect<State>() {
@@ -204,16 +196,6 @@ function useForceRender() {
     };
 }
 
-export function useReduxState<D extends Tuple, T = any>(
-    mapState?: MapState<T, D>,
-): T {
-    if (process.env.NODE_ENV !== "production") {
-        console.warn(
-            "@epeli/redux-hooks: useReduxState() has been renamed to useMapState()",
-        );
-    }
-    return useMapState(mapState);
-}
 
 function useDidDepsChange(deps: any[] | undefined) {
     if (!deps) {
