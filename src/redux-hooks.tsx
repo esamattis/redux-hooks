@@ -132,7 +132,6 @@ export function useDispatch() {
     return store.dispatch;
 }
 
-
 // tslint:disable:react-hooks-nesting
 export function createUseSelect<State>() {
     return function useSelect<Selection, Result>(
@@ -181,7 +180,7 @@ export const useSelect = createUseSelect<any>();
  * Bound actions creators object to Redux dispatch. Memoized.
  */
 export function useActionCreators<T>(actionCreators: T): RemoveReturnTypes<T> {
-    const dispatch = useReduxDispatch();
+    const dispatch = useDispatch();
 
     return useMemo(() => bindActionCreators(actionCreators as any, dispatch), [
         actionCreators,
@@ -195,7 +194,6 @@ function useForceRender() {
         setUpdateCount(count => count + 1);
     };
 }
-
 
 function useDidDepsChange(deps: any[] | undefined) {
     if (!deps) {
