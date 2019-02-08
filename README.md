@@ -61,7 +61,9 @@ Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
 
 ## 🤔 Why yet another Redux Hooks implementation?
 
-All the others I checked had the zombie child bug or had poor performance.
+All the others I checked had the zombie child bug, had poor performance or were missing TypeScript types.
+
+Even the `facebookincubator/redux-react-hook` one has the zombie bug which is stated in its [FAQ](https://github.com/facebookincubator/redux-react-hook/blob/da74ab765c200133f86b629869ba1fdbf46afa97/README.md#how-does-this-compare-to-react-redux)
 
 This also an experiment for the future of the react-redux:
 
