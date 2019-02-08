@@ -52,8 +52,8 @@ interface ContextType {
     updaters: UpdatersMap;
 }
 
-interface MapState<S, Args extends any[], Result> {
-    (state: S, ...args: Args): Result;
+interface MapState<S, Result> {
+    (state: S): Result;
 }
 
 class NoProviderError extends Error {
@@ -205,7 +205,7 @@ function useDidDepsChange(deps: any[] | undefined) {
 
 export function createUseMapState<State>() {
     return function useMapState<Deps extends Tuple, Result = any>(
-        mapState?: MapState<State, Deps, Result>,
+        mapState?: MapState<State, Result>,
         deps?: Deps,
     ): Result {
         const {store, updaters} = useContext(StoreContext);
@@ -244,11 +244,7 @@ export function createUseMapState<State>() {
                 return state;
             }
 
-            if (deps) {
-                return mapState(state, ...deps);
-            }
-
-            return (mapState as Function)(state);
+            return mapState(state);
         };
 
         // Set initial mapped states for the first render
@@ -304,7 +300,7 @@ export function createUseMapState<State>() {
 
 export function createUsePassiveMapState<State>() {
     return function usePassiveMapState<Deps extends Tuple<any>, Result = any>(
-        mapState: MapState<State, Deps, Result>,
+        mapState: MapState<State, Result>,
         deps: Deps,
     ): Result {
         const {store} = useContext(StoreContext);
@@ -313,16 +309,13 @@ export function createUsePassiveMapState<State>() {
             throw new NoProviderError();
         }
 
-        // XXX getting weird type errors without this cast
-        const anyMapState: any = mapState;
-
         if (deps) {
             return useMemo(() => {
-                return anyMapState(store.getState(), deps);
+                return mapState(store.getState());
             }, deps);
         }
 
-        return anyMapState(store.getState(), []);
+        return mapState(store.getState());
     };
 }
 
