@@ -1,4 +1,4 @@
-# 🚀 Optimizing rendering
+# 🚀 Optimizing rendering and mapping
 
 You can optimize state mapping by passing a dependency array which works like
 in the `useMemo()` hook.
