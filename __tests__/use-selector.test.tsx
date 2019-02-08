@@ -355,7 +355,7 @@ test("usePassiveMapState maps on deps change", () => {
                 spy();
                 return s.foo;
             },
-            [3], // empty array prevent update
+            [bar], // empty array prevent update
         );
     });
 
@@ -364,10 +364,10 @@ test("usePassiveMapState maps on deps change", () => {
 
     store.dispatch(
         updateStore(s => {
-            return {...s, foo: "change"};
+            return {...s, bar: "change"};
         }),
     );
 
     expect(res).toEqual("foo");
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledTimes(2);
 });

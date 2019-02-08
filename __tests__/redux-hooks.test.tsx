@@ -514,13 +514,14 @@ test("can use deps", () => {
 
     const store = createStore(reducer);
 
-    function selector(state: State, arg: string, num: number) {
-        mapSpy();
-        return state.foo + arg.toLocaleLowerCase();
-    }
-
     function Thing(props: {s: string}) {
-        const foo = useMapState(selector, [props.s, 2]);
+        const foo = useMapState(
+            state => {
+                mapSpy();
+                return state.foo + props.s.toLocaleLowerCase();
+            },
+            [props.s, 2],
+        );
 
         return <div data-testid="content">{foo}</div>;
     }
