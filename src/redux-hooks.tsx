@@ -51,8 +51,8 @@ interface ContextType {
     updaters: UpdatersMap;
 }
 
-interface MapState<T, D extends any[]> {
-    (state: any, ...args: D): T;
+interface MapState<S, Args extends any[], Result> {
+    (state: S, ...args: Args): Result;
 }
 
 class NoProviderError extends Error {
@@ -206,102 +206,105 @@ function useDidDepsChange(deps: any[] | undefined) {
     return memoDeps == deps;
 }
 
-/**
- * Use part of the redux state
- */
-export function useMapState<D extends Tuple, T = any>(
-    mapState?: MapState<T, D>,
-    deps?: D,
-): T {
-    const {store, updaters} = useContext(StoreContext);
+// tslint:disable:react-hooks-nesting
+export function createMapState<State>() {
+    return function useMapState<Deps extends Tuple, Result = any>(
+        mapState?: MapState<State, Deps, Result>,
+        deps?: Deps,
+    ): Result {
+        const {store, updaters} = useContext(StoreContext);
 
-    /**
-     * Reference to the previously mapped state
-     */
-    const prevRef = useRef<T | Nil>(nil);
+        /**
+         * Reference to the previously mapped state
+         */
+        const prevRef = useRef<Result | Nil>(nil);
 
-    /**
-     * When this is set can bailout state mapping and just return this
-     */
-    const bailoutRef = useRef<T | Nil>(nil);
+        /**
+         * When this is set can bailout state mapping and just return this
+         */
+        const bailoutRef = useRef<Result | Nil>(nil);
 
-    /**
-     * Trigger render from store updates
-     */
-    const triggerRender = useForceRender();
+        /**
+         * Trigger render from store updates
+         */
+        const triggerRender = useForceRender();
 
-    /**
-     * Detect deps change when using the deps array
-     */
-    const depsChanged = useDidDepsChange(deps);
+        /**
+         * Detect deps change when using the deps array
+         */
+        const depsChanged = useDidDepsChange(deps);
 
-    if (!store) {
-        throw new NoProviderError();
-    }
-
-    /**
-     * Get mapped value from the state
-     */
-    const getMappedValue = (): T => {
-        const state = store.getState();
-
-        if (!mapState) {
-            return state;
+        if (!store) {
+            throw new NoProviderError();
         }
 
-        if (deps) {
-            return mapState(state, ...deps);
-        }
+        /**
+         * Get mapped value from the state
+         */
+        const getMappedValue = (): Result => {
+            const state = store.getState();
 
-        return (mapState as Function)(state);
-    };
-
-    // Set initial mapped states for the first render
-    if (prevRef.current === nil) {
-        prevRef.current = bailoutRef.current = getMappedValue();
-    }
-
-    useEffect(() => {
-        // handle updates from the store
-        const update = () => {
-            const next = getMappedValue();
-
-            if (!shallowEqual(prevRef.current, next)) {
-                bailoutRef.current = next;
-                prevRef.current = next;
-                triggerRender();
+            if (!mapState) {
+                return state;
             }
+
+            if (deps) {
+                return mapState(state, ...deps);
+            }
+
+            return (mapState as Function)(state);
         };
 
-        // Mutate the updaters map so the subscription in the provider can
-        // update this hook
-        const id = ++SEQ;
-        updaters.set(id, update);
+        // Set initial mapped states for the first render
+        if (prevRef.current === nil) {
+            prevRef.current = bailoutRef.current = getMappedValue();
+        }
 
-        return () => {
-            // Remove the updater on unmount or store change
-            updaters.delete(id);
+        useEffect(() => {
+            // handle updates from the store
+            const update = () => {
+                const next = getMappedValue();
 
-            // clear cached on store change
-            prevRef.current = nil;
+                if (!shallowEqual(prevRef.current, next)) {
+                    bailoutRef.current = next;
+                    prevRef.current = next;
+                    triggerRender();
+                }
+            };
+
+            // Mutate the updaters map so the subscription in the provider can
+            // update this hook
+            const id = ++SEQ;
+            updaters.set(id, update);
+
+            return () => {
+                // Remove the updater on unmount or store change
+                updaters.delete(id);
+
+                // clear cached on store change
+                prevRef.current = nil;
+                bailoutRef.current = nil;
+            };
+        }, [store]);
+
+        // Bailout with the previously mapped state if we have deps and they did not
+        // change
+        if (deps && !depsChanged && bailoutRef.current === nil) {
+            bailoutRef.current = prevRef.current;
+        }
+
+        // Use the bailout if we have one
+        if (bailoutRef.current !== nil) {
+            const ret = bailoutRef.current;
             bailoutRef.current = nil;
-        };
-    }, [store]);
+            return ret;
+        }
 
-    // Bailout with the previously mapped state if we have deps and they did not
-    // change
-    if (deps && !depsChanged && bailoutRef.current === nil) {
-        bailoutRef.current = prevRef.current;
-    }
-
-    // Use the bailout if we have one
-    if (bailoutRef.current !== nil) {
-        const ret = bailoutRef.current;
-        bailoutRef.current = nil;
-        return ret;
-    }
-
-    // Normal render. Must map the state because the mapping function might
-    // have changed
-    return (prevRef.current = getMappedValue());
+        // Normal render. Must map the state because the mapping function might
+        // have changed
+        return (prevRef.current = getMappedValue());
+    };
 }
+// tslint:enalbe:react-hooks-nesting
+
+export const useMapState = createMapState<any>();
