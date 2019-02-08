@@ -63,10 +63,9 @@ of the state updates based on the another.
 ```ts
 const shop = useMapState(state => state.shops[shopId]);
 
-// Shop products can be updated only when the shop itself
+// Shop products is updated only when the shop itself
 // has been updated. So this generates the productNames
-// array only when shop updates. It does not respond any
-// unrelated state updates
+// array only when the shop has updated. 
 const productNames = usePassiveMapState(
     state => state.shop[shopId].products.map(p => p.name),
     [shop],
