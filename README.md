@@ -55,10 +55,11 @@ your hooks please read the [optimizations docs](docs/optimizing.md).
 
 ## TypeScript support
 
-For each hook there is corresponding creator function ex. `createUseMapState()`
+For each hook there is a corresponding creator function ex. `createUseMapState()`
 which can be used create custom typed version of the hooks
 
 ```ts
+import {createUseMapState} from "@epeli/redux-hooks";
 export const useMyMapState = createUseMapState<MyState>();
 ```
 
