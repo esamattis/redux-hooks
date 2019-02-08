@@ -33,11 +33,10 @@ test("custom usePassiveMapState args inference", () => {
     const usePassiveMyState = createUsePassiveMapState<{ding: number}>();
     function Foo() {
         usePassiveMyState(
-            (state, a, b) => {
+            (state, a) => {
                 a; // $ExpectType number
-                b; // $ExpectType string
             },
-            [1, ""],
+            [1],
         );
     }
 });

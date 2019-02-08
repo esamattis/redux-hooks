@@ -53,6 +53,15 @@ efficiently. Read more about it
 That's enough for most use cases but if you want to get everything out off
 your hooks please read the [optimizations docs](docs/optimizing.md).
 
+## TypeScript support
+
+For each hook there is corresponding creator function ex. `createUseMapState()`
+which can be used create custom typed version of the hooks
+
+```ts
+export const useMyMapState = createUseMapState<MyState>();
+```
+
 ## 📚 Examples
 
 Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree/hooks
