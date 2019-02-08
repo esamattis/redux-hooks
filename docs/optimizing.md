@@ -61,6 +61,8 @@ This is for really advanced scenarios where you know exactly when some part
 of the state updates based on the another.
 
 ```ts
+import {useMapState} from "@epeli/redux-hooks";
+
 const shop = useMapState(state => state.shops[shopId]);
 
 // Shop products is updated only when the shop itself
