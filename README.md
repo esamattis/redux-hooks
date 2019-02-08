@@ -63,7 +63,7 @@ Github: https://github.com/epeli/typescript-redux-todoapp/tree/hooks
 
 All the others I checked had the zombie child bug, had poor performance or were missing TypeScript types.
 
-Even the `facebookincubator/redux-react-hook` one has the zombie bug which is stated in its [FAQ](https://github.com/facebookincubator/redux-react-hook/blob/da74ab765c200133f86b629869ba1fdbf46afa97/README.md#how-does-this-compare-to-react-redux)
+Even the `facebookincubator/redux-react-hook` one has the zombie bug which is stated in its [FAQ](https://github.com/facebookincubator/redux-react-hook/blob/da74ab765c200133f86b629869ba1fdbf46afa97/README.md#how-does-this-compare-to-react-redux). This one  guarantees that data flows top down like the official react-redux.
 
 This also an experiment for the future of the react-redux:
 
