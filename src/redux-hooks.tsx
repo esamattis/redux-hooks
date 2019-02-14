@@ -47,8 +47,17 @@ interface UpdatersMap {
     forEach(cb: (updater: Function) => void): unknown;
 }
 
+/**
+ * Require only parts of the store we need
+ */
+interface LooseStore {
+    dispatch(action: any): any;
+    getState(): any;
+    subscribe(cb: Function): void;
+}
+
 interface ContextType {
-    store?: Store;
+    store?: LooseStore;
     updaters: UpdatersMap;
 }
 
@@ -93,7 +102,7 @@ const StoreContext = React.createContext<ContextType>({
 });
 
 export function HooksProvider(props: {
-    store: Store;
+    store: LooseStore;
     children: React.ReactNode;
 }) {
     // Mutable updaters list of all useReduxState() users
