@@ -239,6 +239,12 @@ export function createUseMapState<State>() {
          */
         const depsChanged = useDidDepsChange(deps);
 
+        /**
+         * Reference to the mapState function
+         */
+        const mapStateRef = useRef<MapState<State, Result>>();
+        mapStateRef.current = mapState;
+
         if (!store) {
             throw new NoProviderError();
         }
@@ -249,11 +255,11 @@ export function createUseMapState<State>() {
         const getMappedValue = (): Result => {
             const state = store.getState();
 
-            if (!mapState) {
+            if (!mapStateRef.current) {
                 return state;
             }
 
-            return mapState(state);
+            return mapStateRef.current(state);
         };
 
         // Set initial mapped states for the first render

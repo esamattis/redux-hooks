@@ -4,8 +4,10 @@ import {
     HooksProvider,
     useMapState,
     useActionCreators,
+    useDispatch,
 } from "../src/redux-hooks";
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
+// import {useDispatch} from "../lib/redux-hooks";
 
 afterEach(cleanup);
 
@@ -561,4 +563,55 @@ test("can use deps", () => {
     });
     expect(mapSpy).toHaveBeenCalledTimes(3);
     expect(rtl.getByTestId("content").innerHTML).toBe("foobar");
+});
+
+test("can update mapState reference", async () => {
+    const initialState = {
+        a: "a",
+        b: "b",
+    };
+
+    function reducer(state = initialState, action: {type: string}) {
+        switch (action.type) {
+            case "update": {
+                return {
+                    a: "a dispatched",
+                    b: "b dispatched",
+                };
+            }
+            default:
+                return state;
+        }
+    }
+
+    const store = createStore(reducer);
+
+    function Thing() {
+        const [key, setKey] = useState("a");
+        const value = useMapState(state => state[key], [key]);
+        const dispatch = useDispatch();
+        useEffect(() => {
+            setKey("b");
+            setTimeout(() => {
+                dispatch({type: "update"});
+            }, 0);
+        }, []);
+
+        return <div data-testid="content">{value}</div>;
+    }
+
+    function App() {
+        return (
+            <HooksProvider store={store}>
+                <Thing />
+            </HooksProvider>
+        );
+    }
+
+    const rtl = render(<App />);
+    await nextTick();
+
+    const el = rtl.getByTestId("content");
+
+    expect(el.innerHTML).toBe("b dispatched");
 });
