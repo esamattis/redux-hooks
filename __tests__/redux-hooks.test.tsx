@@ -589,12 +589,8 @@ test("can update mapState reference", async () => {
     function Thing() {
         const [key, setKey] = useState("a");
         const value = useMapState(state => state[key], [key]);
-        const dispatch = useDispatch();
         useEffect(() => {
             setKey("b");
-            setTimeout(() => {
-                dispatch({type: "update"});
-            }, 0);
         }, []);
 
         return <div data-testid="content">{value}</div>;
@@ -609,7 +605,10 @@ test("can update mapState reference", async () => {
     }
 
     const rtl = render(<App />);
+
     await nextTick();
+
+    store.dispatch({type: "update"});
 
     const el = rtl.getByTestId("content");
 
