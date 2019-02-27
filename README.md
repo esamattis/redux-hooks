@@ -63,6 +63,10 @@ import {createUseMapState} from "@epeli/redux-hooks";
 export const useMyMapState = createUseMapState<MyState>();
 ```
 
+## Other hooks
+
+- `useDispatch()` Returns the plain dispatch-function 
+
 ## 📚 Examples
 
 Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree/hooks
