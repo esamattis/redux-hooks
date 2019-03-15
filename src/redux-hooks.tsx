@@ -232,6 +232,10 @@ export function createUseMapState<State>() {
     ): Result {
         const {store, updaters} = useContext(StoreContext);
 
+        if (!store) {
+            throw new NoProviderError();
+        }
+
         /**
          * Reference to the previously mapped state
          */
@@ -257,10 +261,6 @@ export function createUseMapState<State>() {
          */
         const mapStateRef = useRef<MapState<State, Result>>();
         mapStateRef.current = mapState;
-
-        if (!store) {
-            throw new NoProviderError();
-        }
 
         /**
          * Get mapped value from the state
