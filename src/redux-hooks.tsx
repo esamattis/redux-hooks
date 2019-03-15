@@ -108,14 +108,27 @@ export function HooksProvider(props: {
     // Mutable updaters list of all useReduxState() users
     const updaters = useRef<UpdatersMap>(createMap());
 
-    useEffect(() => {
-        // Setup only one listener for the provider
-        return props.store.subscribe(() => {
-            // so we can batch update all hook users without causing tearing
-            ReactDOM.unstable_batchedUpdates(() => {
-                updaters.current.forEach(updater => updater());
-            });
+    /**
+     * Notify subscribers
+     */
+    const notify = () => {
+        ReactDOM.unstable_batchedUpdates(() => {
+            updaters.current.forEach(updater => updater());
         });
+    };
+
+    const preEffectState = props.store.getState();
+
+    useEffect(() => {
+        // Children might dispatch during effect exection. Check for that and
+        // notify them
+        if (preEffectState !== props.store.getState()) {
+            notify();
+        }
+
+        // Setup only one listener for the provider so we can batch update all
+        // hook users without causing tearing
+        return props.store.subscribe(notify);
     }, [props.store]);
 
     // Context values never update. We put the store directly and the updates
