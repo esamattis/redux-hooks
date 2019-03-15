@@ -614,3 +614,61 @@ test("can update mapState reference", async () => {
 
     expect(el.innerHTML).toBe("b dispatched");
 });
+
+test("handles dispatches in child component useEffect hooks", async () => {
+    interface State {
+        foo: string;
+    }
+
+    const initialState: State = {
+        foo: "foo",
+    };
+
+    const fooAction = {type: "NEW_FOO", foo: "newfoo"};
+
+    function reducer(
+        state: State | undefined,
+        action: typeof fooAction,
+    ): State {
+        state = state || initialState;
+
+        if (action.type === "NEW_FOO") {
+            return {...state, foo: action.foo};
+        }
+
+        return state;
+    }
+
+    const store = createStore(reducer);
+
+    function Thing() {
+        const foo = useMapState((s: State) => s.foo);
+
+        return <div data-testid="content">{foo}</div>;
+    }
+
+    function DispatchInUseEffect() {
+        const dispatch = useDispatch();
+
+        useEffect(() => {
+            dispatch(fooAction);
+        }, []);
+
+        return null;
+    }
+
+    function App() {
+        return (
+            <HooksProvider store={store as any /* wtf */}>
+                <Thing />
+                <DispatchInUseEffect />
+            </HooksProvider>
+        );
+    }
+
+    const rtl = render(<App />);
+
+    await nextTick();
+
+    expect(rtl.getByTestId("content").innerHTML).toBe("newfoo");
+});
