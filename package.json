@@ -1,6 +1,6 @@
 {
   "name": "@epeli/redux-hooks",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "",
   "main": "lib/redux-hooks.js",
   "types": "lib/redux-hooks.d.ts",
