@@ -237,6 +237,11 @@ export function createUseMapState<State>() {
         }
 
         /**
+         * Hold inital store state when the component mounts
+         */
+        const initialState = useMemo(() => store.getState(), [store]);
+
+        /**
          * Reference to the previously mapped state
          */
         const prevRef = useRef<Result | Nil>(nil);
@@ -296,6 +301,11 @@ export function createUseMapState<State>() {
             // update this hook
             const id = ++SEQ;
             updaters.set(id, update);
+
+            // Self update if the store did update between first render and this effect
+            if (initialState !== store.getState()) {
+                update();
+            }
 
             return () => {
                 // Remove the updater on unmount or store change
