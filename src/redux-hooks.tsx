@@ -117,7 +117,7 @@ export function HooksProvider(props: {
         });
     };
 
-    const preEffectState = props.store.getState();
+    const preEffectState = useMemo(() => props.store.getState(), [props.store]);
 
     useEffect(() => {
         // Children might dispatch during effect exection. Check for that and
