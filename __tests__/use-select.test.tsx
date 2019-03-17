@@ -75,7 +75,7 @@ function createLazyUseState<T>(initialState: T): [(s: T) => void, () => T] {
     ];
 }
 
-const useSelector = createUseSelect<State>();
+const useSelect = createUseSelect<State>();
 const usePassive = createUsePassiveMapState<State>();
 
 test("provides the context default value", () => {
@@ -88,7 +88,7 @@ test("provides the context default value", () => {
     withProvider(store, () => {
         const count = useTestState();
 
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.bar,
@@ -127,7 +127,7 @@ test("dependencies can prevent update", () => {
     withProvider(store, () => {
         const count = useTestState();
 
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.bar,
@@ -159,7 +159,7 @@ test("dependencies can be used correctly", () => {
     withProvider(store, () => {
         const count = useTestState();
 
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.bar,
@@ -188,7 +188,7 @@ test("store update can produce new mapped state", () => {
     const store = createTestStore();
 
     withProvider(store, () => {
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.bar,
@@ -231,7 +231,7 @@ test("map is not executed if selector dont produce new value from RENDER update"
         const count = useTestState();
         renderSpy();
 
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.foo,
@@ -260,7 +260,7 @@ test("map is not executed if selector dont produce new value from STORE update",
     const store = createTestStore();
 
     withProvider(store, () => {
-        res = useSelector(
+        res = useSelect(
             s => ({
                 a: s.foo,
                 b: s.foo,
