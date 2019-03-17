@@ -1,4 +1,10 @@
-// Adapted to TS from https://github.com/reduxjs/react-redux/blob/aba2452c8012336daaca666a3fda0f565a8f0cbc/src/utils/shallowEqual.js
+/**
+ * Shallow Equal check
+ *
+ * Adapted to TS from https://github.com/reduxjs/react-redux/blob/aba2452c8012336daaca666a3fda0f565a8f0cbc/src/utils/shallowEqual.js
+ **/
+
+/** Determines whether an object has a property with the specified name.  */
 const hasOwn = Object.prototype.hasOwnProperty;
 
 /**
@@ -22,6 +28,18 @@ export function shallowEqual(objA: any, objB: any) {
         objB === null
     ) {
         return false;
+    }
+
+    if (Array.isArray(objA) && Array.isArray(objB)) {
+        if (objA.length !== objB.length) return false;
+
+        for (let i = 0; i < objA.length; i++) {
+            if (!is(objA[i], objB[i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     const keysA = Object.keys(objA);

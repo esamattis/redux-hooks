@@ -37,12 +37,14 @@ function withProvider(store: Store, callback: Function) {
 interface State {
     foo: string;
     bar: string;
+    array: number[];
 }
 
 function createTestStore() {
     const initialState: State = {
         foo: "foo",
         bar: "bar",
+        array: [1, 2],
     };
 
     function reducer(state: State | undefined, action: any) {
@@ -242,6 +244,26 @@ test("useSelect: dependencies can be used correctly", () => {
 
     expect(spy).toBeCalledTimes(2);
     expect(res).toEqual("foobar2");
+});
+
+test("useSelect: shallow equal checks arrays", () => {
+    let res: any;
+    const spy = jest.fn();
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        spy();
+        res = useSelect(s => s.array.concat(3));
+    });
+
+    store.dispatch(
+        updateStore(s => {
+            return {...s, foo: "change"};
+        }),
+    );
+
+    expect(spy).toBeCalledTimes(1);
+    expect(res).toEqual([1, 2, 3]);
 });
 
 test("useSelect: store update can produce new mapped state", () => {
