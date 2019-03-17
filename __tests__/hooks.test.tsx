@@ -78,7 +78,7 @@ function createLazyUseState<T>(initialState: T): [(s: T) => void, () => T] {
 const useSelect = createUseSelect<State>();
 const usePassive = createUsePassiveMapState<State>();
 
-test("provides the context default value", () => {
+test("useSelect: provides the context default value", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -117,7 +117,7 @@ test("provides the context default value", () => {
     expect(spy).toBeCalledTimes(3);
 });
 
-test("useSelect defaults to an indentity function", () => {
+test("useSelect: defaults to an indentity function", () => {
     let res: any;
     const store = createTestStore();
 
@@ -131,7 +131,7 @@ test("useSelect defaults to an indentity function", () => {
     expect(res).toEqual({a: "foo", b: "bar"});
 });
 
-test("dependencies can prevent update", () => {
+test("useSelect: dependencies can prevent update", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -163,7 +163,7 @@ test("dependencies can prevent update", () => {
     expect(res).toEqual("foobar0");
 });
 
-test("dependencies can be used correctly", () => {
+test("useSelect: dependencies can be used correctly", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -196,7 +196,7 @@ test("dependencies can be used correctly", () => {
     expect(res).toEqual("foobar2");
 });
 
-test("store update can produce new mapped state", () => {
+test("useSelect: store update can produce new mapped state", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -233,7 +233,7 @@ test("store update can produce new mapped state", () => {
     expect(res).toEqual("change2bar");
 });
 
-test("map is not executed if selector dont produce new value from RENDER update", () => {
+test("useSelect: map is not executed if selector dont produce new value from RENDER update", () => {
     let res: any;
     const spy = jest.fn();
     const renderSpy = jest.fn();
@@ -268,7 +268,7 @@ test("map is not executed if selector dont produce new value from RENDER update"
     expect(renderSpy).toBeCalledTimes(2);
 });
 
-test("map is not executed if selector dont produce new value from STORE update", () => {
+test("useSelect: map is not executed if selector dont produce new value from STORE update", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -300,7 +300,7 @@ test("map is not executed if selector dont produce new value from STORE update",
     expect(spy).toBeCalledTimes(1);
 });
 
-test("usePassiveMapState does not map on store update", () => {
+test("usePassiveMapState: does not map on store update", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
@@ -328,7 +328,7 @@ test("usePassiveMapState does not map on store update", () => {
     expect(spy).toBeCalledTimes(1);
 });
 
-test("usePassiveMapState does not map on render", () => {
+test("usePassiveMapState: does not map on render", () => {
     let res: any;
     const spy = jest.fn();
     const renderSpy = jest.fn();
@@ -356,7 +356,7 @@ test("usePassiveMapState does not map on render", () => {
     expect(spy).toBeCalledTimes(1);
 });
 
-test("usePassiveMapState maps on deps change", () => {
+test("usePassiveMapState: maps on deps change", () => {
     let res: any;
     const spy = jest.fn();
     const store = createTestStore();
