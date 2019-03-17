@@ -9,7 +9,13 @@ import {
 import {createStore, Store} from "redux";
 // tslint:disable:react-hooks-nesting
 
+beforeEach(() => {
+    process.env.NODE_ENV = "production";
+});
+
 afterEach(cleanup);
+
+afterEach(() => jest.restoreAllMocks());
 
 // This helper component allows us to call the hook in a component context as
 // per the Rules of Hooks (https://reactjs.org/docs/hooks-rules.html). We're
@@ -103,6 +109,21 @@ test("useMapState: renders new value when identity changes", () => {
     );
 
     expect(spy).toBeCalledTimes(3);
+});
+
+test("useMapState: warns when useMapState returns always new indentities", () => {
+    process.env.NODE_ENV = "test";
+
+    const spy = jest.spyOn(console, "warn");
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        useMapState(s => ({
+            foo: s.foo,
+        }));
+    });
+
+    expect(spy).toHaveBeenCalledTimes(1);
 });
 
 test("useSelect: provides the context default value", () => {

@@ -284,7 +284,19 @@ export function createUseMapState<State>() {
                 return state;
             }
 
-            return mapStateRef.current(state);
+            const res = mapStateRef.current(state);
+
+            if (process.env.NODE_ENV !== "production") {
+                const check = mapStateRef.current(state);
+                if (!is(check, res)) {
+                    console.warn(
+                        "useMapState returns new identity on every run. This causes the component to render on every Redux state change. Consider use using useSelect().",
+                        res,
+                    );
+                }
+            }
+
+            return res;
         };
 
         // Set initial mapped states for the first render

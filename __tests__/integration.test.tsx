@@ -6,8 +6,11 @@ import {
     useActionCreators,
     useDispatch,
 } from "../src/redux-hooks";
-import React, {useState, useCallback, useEffect} from "react";
-// import {useDispatch} from "../lib/redux-hooks";
+import React, {useState, useEffect} from "react";
+
+beforeEach(() => {
+    process.env.NODE_ENV = "production";
+});
 
 afterEach(cleanup);
 
