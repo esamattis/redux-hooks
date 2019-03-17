@@ -70,10 +70,10 @@ You can use `createHooks()` factory to create custom typed version of the hooks
 ```ts
 import {createHooks} from "@epeli/redux-hooks";
 
-const hooks = createHooks<{foo: string}>();
+const AppHooks = createHooks<{foo: string}>();
 
 function Foo() {
-    const foo = hooks.useMapState(state => state.foo);
+    const foo = AppHooks.useMapState(state => state.foo);
     return <div>String: {foo}</div>;
 }
 ```
