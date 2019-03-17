@@ -156,11 +156,21 @@ export function useDispatch() {
 }
 
 export function createUseSelect<State>() {
-    return function useSelect<Selection, Result>(
+    function useSelect<Selection, Result>(
+        select: (state: State) => Selection,
+        produce: (selection: Selection) => Result,
+        deps?: any[],
+    ): Result;
+
+    function useSelect<Selection>(
+        select: (state: State) => Selection,
+    ): Selection;
+
+    function useSelect<Selection, Result>(
         select: (state: State) => Selection,
         produce?: (selection: Selection) => Result,
         deps?: any[],
-    ): Result {
+    ): Selection | Result {
         const ref = useRef<{
             result: Result | Nil;
             prevSelection: Selection | Nil;
@@ -169,7 +179,7 @@ export function createUseSelect<State>() {
             prevSelection: nil,
         });
 
-        function defaultProduce(state: Selection): Result {
+        function defaultProduce(state: Selection): Selection {
             return state as any;
         }
 
@@ -194,12 +204,14 @@ export function createUseSelect<State>() {
                     ? produce(selection)
                     : defaultProduce(selection);
 
-                ref.current.result = res;
+                ref.current.result = res as any;
                 return res as any;
             },
             deps as any,
         );
-    };
+    }
+
+    return useSelect;
 }
 
 /**
