@@ -50,10 +50,18 @@ do not use subscriptions and it's impossible to implement Redux hooks without
 efficiently. Read more about it
 [here](https://github.com/reduxjs/react-redux/issues/1177).
 
-## 🚀 Optimizing rendering
+## 📚 Available hooks
 
-The above API is enough for most use cases but if you want to get everything out off
-your hooks please read the [optimizations docs](docs/optimizing.md).
+-   `useMapState()` Renders when returned value differ using [`Object.is()`][is] check
+-   `useSelect()` Renders when returned value differ using shallow equal check
+-   `useActionCreators()` Bind object of action creators to dispatch
+-   `useDispatch()` Returns the plain dispatch-function
+-   `usePassiveMapState()` Like `useMapState()` but does not subscribe to the
+    store eg. is executed only when the component renders.
+
+[is]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+
+Please read the [optimizations docs](docs/optimizing.md) for details when to use these.
 
 ## TypeScript usage
 
@@ -70,11 +78,7 @@ function Foo() {
 }
 ```
 
-## Other hooks
-
--   `useDispatch()` Returns the plain dispatch-function
-
-## 📚 Examples
+## Examples
 
 Codesandbox: https://codesandbox.io/s/github/epeli/typescript-redux-todoapp/tree/hooks
 

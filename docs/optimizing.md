@@ -47,6 +47,9 @@ The latter produce function is executed only when the former select function
 returns a new value (shallow equal). This is mostly useful for avoiding
 creating new references which can cause [useless rendering downstream][pure].
 
+If no produce function is passed it defaults to simple `s => s` function
+making it a shallow equal version of the `useMapState()`.
+
 [reselect]: https://github.com/reduxjs/reselect
 [pure]: https://medium.com/@esamatti/react-js-pure-render-performance-anti-pattern-fb88c101332f
 
@@ -67,7 +70,7 @@ const shop = useMapState(state => state.shops[shopId]);
 
 // Shop products is updated only when the shop itself
 // has been updated. So this generates the productNames
-// array only when the shop has updated. 
+// array only when the shop has updated.
 const productNames = usePassiveMapState(
     state => state.shop[shopId].products.map(p => p.name),
     [shop],
