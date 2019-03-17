@@ -379,3 +379,16 @@ export function createUsePassiveMapState<State>() {
 export const useMapState = createUseMapState<any>();
 export const usePassiveMapState = createUsePassiveMapState<any>();
 export const useSelect = createUseSelect<any>();
+
+/**
+ * Create custom typed versions of the hooks
+ */
+export function createHooks<State>() {
+    return {
+        useMapState: createUseMapState<State>(),
+        usePassiveMapState: createUsePassiveMapState<State>(),
+        useSelect: createUseSelect<State>(),
+        useDispatch: useDispatch,
+        useActionCreators: useActionCreators,
+    };
+}
