@@ -72,7 +72,7 @@ function Foo() {
 
 ## Other hooks
 
-- `useDispatch()` Returns the plain dispatch-function 
+-   `useDispatch()` Returns the plain dispatch-function
 
 ## 📚 Examples
 
