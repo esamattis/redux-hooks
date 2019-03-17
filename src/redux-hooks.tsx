@@ -158,7 +158,7 @@ export function useDispatch() {
 export function createUseSelect<State>() {
     return function useSelect<Selection, Result>(
         select: (state: State) => Selection,
-        produce: (selection: Selection) => Result,
+        produce?: (selection: Selection) => Result,
         deps?: any[],
     ): Result {
         const ref = useRef<{
@@ -168,6 +168,10 @@ export function createUseSelect<State>() {
             result: nil,
             prevSelection: nil,
         });
+
+        function defaultProduce(state: Selection): Result {
+            return state as any;
+        }
 
         return useMapState(
             (state: State) => {
@@ -186,7 +190,10 @@ export function createUseSelect<State>() {
                     return ref.current.result;
                 }
 
-                const res = produce(selection);
+                const res = produce
+                    ? produce(selection)
+                    : defaultProduce(selection);
+
                 ref.current.result = res;
                 return res as any;
             },

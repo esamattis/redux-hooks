@@ -117,6 +117,20 @@ test("provides the context default value", () => {
     expect(spy).toBeCalledTimes(3);
 });
 
+test("useSelect defaults to an indentity function", () => {
+    let res: any;
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        res = useSelect(s => ({
+            a: s.foo,
+            b: s.bar,
+        }));
+    });
+
+    expect(res).toEqual({a: "foo", b: "bar"});
+});
+
 test("dependencies can prevent update", () => {
     let res: any;
     const spy = jest.fn();
