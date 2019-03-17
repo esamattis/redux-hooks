@@ -8,7 +8,8 @@
         "url": "https://github.com/epeli/redux-hooks"
     },
     "scripts": {
-        "test": "jest",
+        "test": "tsc && npm run lint && jest",
+        "lint": "tslint --project .",
         "build": "tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
         "clean": "rm -rf lib build",
         "prepublishOnly": "npm run test && npm run build"
