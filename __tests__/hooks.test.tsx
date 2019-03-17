@@ -2,9 +2,9 @@ import {render, cleanup, act} from "react-testing-library";
 import React, {useState} from "react";
 import {
     HooksProvider,
-    useMapState,
     createUseSelect,
     createUsePassiveMapState,
+    createUseMapState,
 } from "../src/redux-hooks";
 import {createStore, Store} from "redux";
 // tslint:disable:react-hooks-nesting
@@ -75,8 +75,35 @@ function createLazyUseState<T>(initialState: T): [(s: T) => void, () => T] {
     ];
 }
 
+const useMapState = createUseMapState<State>();
 const useSelect = createUseSelect<State>();
 const usePassive = createUsePassiveMapState<State>();
+
+test("useMapState: renders new value when identity changes", () => {
+    const spy = jest.fn();
+    const store = createTestStore();
+
+    withProvider(store, () => {
+        useMapState(s => ({
+            foo: s.foo,
+        }));
+        spy(3);
+    });
+
+    store.dispatch(
+        updateStore(s => {
+            return {...s, bar: "change"};
+        }),
+    );
+
+    store.dispatch(
+        updateStore(s => {
+            return {...s, bar: "change2"};
+        }),
+    );
+
+    expect(spy).toBeCalledTimes(3);
+});
 
 test("useSelect: provides the context default value", () => {
     let res: any;

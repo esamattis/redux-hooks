@@ -1,7 +1,10 @@
 // Adapted to TS from https://github.com/reduxjs/react-redux/blob/aba2452c8012336daaca666a3fda0f565a8f0cbc/src/utils/shallowEqual.js
 const hasOwn = Object.prototype.hasOwnProperty;
 
-function is(x: any, y: any) {
+/**
+ * Object.is() polyfill
+ */
+export function is(x: any, y: any) {
     if (x === y) {
         return x !== 0 || y !== 0 || 1 / x === 1 / y;
     } else {

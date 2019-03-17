@@ -2,7 +2,7 @@
 import {Store, bindActionCreators} from "redux";
 import ReactDOM from "react-dom";
 import React, {useContext, useState, useEffect, useRef, useMemo} from "react";
-import {shallowEqual} from "./shallow-equal";
+import {shallowEqual, is} from "./shallow-equal";
 
 declare const process: any;
 
@@ -297,7 +297,7 @@ export function createUseMapState<State>() {
             const update = () => {
                 const next = getMappedValue();
 
-                if (!shallowEqual(prevRef.current, next)) {
+                if (!is(prevRef.current, next)) {
                     bailoutRef.current = next;
                     prevRef.current = next;
                     triggerRender();
