@@ -42,3 +42,15 @@ test("createHooks: useSelect return type", () => {
 
     assert<IsExact<typeof ret, string>>(true);
 });
+
+test("createHooks: can type actions for useDispatch", () => {
+    interface Action {
+        type: "TEST_ACTION";
+    }
+
+    const MyHooks = createHooks<{foo: string}, Action>();
+
+    const dispatch = MyHooks.useDispatch();
+
+    assert<IsExact<Parameters<typeof dispatch>[0], Action>>(true);
+});

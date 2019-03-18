@@ -392,15 +392,19 @@ export const useMapState = createUseMapState<any>();
 export const usePassiveMapState = createUsePassiveMapState<any>();
 export const useSelect = createUseSelect<any>();
 
+interface UseDispatch<Action> {
+    (): (action: Action) => void;
+}
+
 /**
  * Create custom typed versions of the hooks
  */
-export function createHooks<State>() {
+export function createHooks<State, Action = any>() {
     return {
         useMapState: createUseMapState<State>(),
         usePassiveMapState: createUsePassiveMapState<State>(),
         useSelect: createUseSelect<State>(),
-        useDispatch: useDispatch,
+        useDispatch: useDispatch as UseDispatch<Action>,
         useActionCreators: useActionCreators,
     };
 }
