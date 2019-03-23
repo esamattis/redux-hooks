@@ -228,7 +228,7 @@ export function useActionCreators<T>(actionCreators: T): RemoveReturnTypes<T> {
 function useForceRender() {
     const [_, setUpdateCount] = useState(0);
 
-    return function trigger() {
+    return function triggerRender() {
         setUpdateCount(count => count + 1);
     };
 }
