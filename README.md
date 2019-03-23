@@ -1,7 +1,7 @@
 # ⚓ @epeli/redux-hooks
 
 React Hooks implementation for Redux that does not suffer from the tearing /
-"zombie child component" problems. [Read more](#-why-yet-another-redux-hooks-implementation).
+"zombie child component" problems. [Read here how](https://github.com/epeli/redux-hooks/issues/9).
 
 It also implements performance optimizations eg. does not render when the map
 state function does not produce new value and allows advanced
